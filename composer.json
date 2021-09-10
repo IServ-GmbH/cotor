@@ -1,0 +1,32 @@
+{
+  "name": "iserv/composertoolsinstaller",
+  "type": "library",
+  "description": "Allows to install tools a standalone composer dependencies.",
+  "license": "proprietary",
+  "require": {
+    "php": ">=7.3",
+    "symfony/console": "^5.3",
+    "symfony/filesystem": "^5.3",
+    "symfony/process": "^5.3"
+  },
+  "suggest": {
+    "box-project/box": "Uses box to build phar. Recommended to use box.phar instead of composer."
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "IServ\\ComposerToolsInstaller\\": "src"
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://composer.iserv.eu"
+    }
+  ],
+  "bin": [
+    "bin/composertoolsinstaller"
+  ]
+}

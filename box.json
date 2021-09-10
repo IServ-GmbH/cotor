@@ -1,0 +1,13 @@
+{
+  "directories": [
+    "src"
+  ],
+  "finder": [
+    {
+      "name": "*.php",
+      "in": "vendor"
+    }
+  ],
+  "git-version": "package_version",
+  "output": "cotor.phar"
+}
