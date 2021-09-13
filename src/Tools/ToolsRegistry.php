@@ -14,7 +14,8 @@ final class ToolsRegistry
             'phpcsfixer' => 'friendsofphp/php-cs-fixer',
             'phpstan' => 'phpstan/phpstan',
             'phpunit' => 'phpunit/phpunit',
-            'pslam' => 'vimeo/pslam',
+            'psalm' => 'vimeo/psalm',
+            'pslam' => 'vimeo/psalm',
         ];
     }
 }
