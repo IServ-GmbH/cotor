@@ -1,7 +1,7 @@
 {
   "name": "iserv/composertoolsinstaller",
   "type": "library",
-  "description": "Allows to install tools a standalone composer dependencies.",
+  "description": "Allows to install tools as standalone composer dependencies.",
   "license": "proprietary",
   "require": {
     "php": ">=7.3",

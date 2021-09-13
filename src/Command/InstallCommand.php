@@ -16,6 +16,16 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 final class InstallCommand extends AbstractToolCommand
 {
+    private const WRAPPER = <<<BASH
+#!/bin/bash
+
+DIR=$(realpath "$(dirname "\${BASH_SOURCE[0]}")")
+
+composer install --working-dir=\$DIR/%NAME% --quiet
+exec \$DIR/%NAME%/vendor/bin/%NAME% "$@"
+
+BASH;
+
     protected static $defaultName = 'install';
 
     /** @var Filesystem */
@@ -80,18 +90,22 @@ final class InstallCommand extends AbstractToolCommand
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $vendor, $name);
+            $this->runComposerWithArguments('config', $targetDir, 'platform.php', '7.3.19'); // TODO: Remove PHP 8 workaround!
         } catch (ProcessFailedException $e) {
             $io->error('Failed to run composer: ' . $e->getProcess()->getErrorOutput());
 
             return Command::FAILURE;
         }
 
-        // Create symlink from vendor-bin to tools/$name.phar to replace phive transparently
-        $binPath = sprintf('%s/vendor/bin/%s', $targetDir, $name);
-        if ($this->filesystem->exists($binPath)) {
-            $this->filesystem->symlink($binPath, sprintf('%s/%s.phar', $toolsDir, $name));
-        } else {
-            $io->warning(sprintf('Could not find executable for %s at %s! Skipping symlinking as phar.', $name, $binPath));
+        // Create wrapper as tools/$name.phar to replace phive transparently
+        $pharPath = sprintf('%s/%s.phar', $toolsDir, $name);
+        if ($force && $this->filesystem->exists($pharPath)) {
+            $this->filesystem->remove($pharPath);
+        }
+
+        if (!$this->filesystem->exists($pharPath)) {
+            $this->filesystem->dumpFile($pharPath, str_replace('%NAME%', $name, self::WRAPPER));
+            $this->filesystem->chmod($pharPath, 755);
         }
 
         $io->success(sprintf('%s installed successfully.', $name));
