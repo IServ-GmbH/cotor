@@ -3,3 +3,4 @@
 /coverage/
 /composer.lock
 /cotor.phar
+/tools/*/vendor/

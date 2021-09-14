@@ -28,7 +28,7 @@ final class UpdateCommand extends AbstractToolCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $name = $input->getArgument('name');
+        $name = (string)$input->getArgument('name');
 
         $toolsDir = getcwd() . '/tools';
         if (!is_dir($toolsDir)) {
@@ -56,7 +56,9 @@ final class UpdateCommand extends AbstractToolCommand
         try {
             $this->runComposer('update', $targetDir);
         } catch (ProcessFailedException $e) {
-            $io->error('Failed to run composer: ' . $e->getProcess()->getErrorOutput());
+            /** @var Process $process */
+            $process = $e->getProcess(); // Make psalm happy :/
+            $io->error('Failed to run composer: ' . $process->getErrorOutput());
 
             return Command::FAILURE;
         }

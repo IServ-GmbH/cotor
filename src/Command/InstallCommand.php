@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IServ\ComposerToolsInstaller\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 final class InstallCommand extends AbstractToolCommand
 {
@@ -57,6 +59,7 @@ BASH;
 
         $toolsDir = $this->getToolsDir();
         if (!is_dir($toolsDir)) {
+            /** @var QuestionHelper $helper */
             $helper = $this->getHelper('question');
             $question = new ConfirmationQuestion('There is no tools directory. Do you want to create it now?', false);
 
@@ -94,7 +97,9 @@ BASH;
             $this->runComposerWithArguments('config', $targetDir, 'platform.php', '7.3.19'); // TODO: Remove PHP 8 workaround!
             $this->runComposerWithPackage('require', $targetDir, $vendor, $name);
         } catch (ProcessFailedException $e) {
-            $io->error('Failed to run composer: ' . $e->getProcess()->getErrorOutput());
+            /** @var Process $process */
+            $process = $e->getProcess(); // Make psalm happy :/
+            $io->error('Failed to run composer: ' . $process->getErrorOutput());
 
             return Command::FAILURE;
         }

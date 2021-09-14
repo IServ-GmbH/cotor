@@ -1,0 +1,10 @@
+{
+    "config": {
+        "platform": {
+            "php": "7.3.19"
+        }
+    },
+    "require": {
+        "phpstan/phpstan": "^0.12.99"
+    }
+}

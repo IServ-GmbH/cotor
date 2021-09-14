@@ -17,7 +17,7 @@ abstract class AbstractToolCommand extends Command
     }
 
     /**
-     * @return array{0: string, 1: string}
+     * @return array<int, string>
      */
     protected function getVendorAndName(string $name): array
     {
@@ -29,7 +29,7 @@ abstract class AbstractToolCommand extends Command
             $name = ToolsRegistry::getRegisteredTools()[$name];
         }
 
-        return explode('/', $name);
+        return explode('/', $name, 2);
     }
 
     /**
@@ -53,9 +53,9 @@ abstract class AbstractToolCommand extends Command
     /**
      * @throws ProcessFailedException
      */
-    protected function runComposerWithArguments(string $command, string $targetDir, ...$arguments): void
+    protected function runComposerWithArguments(string $command, string $targetDir, string ...$arguments): void
     {
-        $process = new Process(array_merge(['composer', $command, sprintf('--working-dir=%s', $targetDir)], $arguments ?? []));
+        $process = new Process(array_merge(['composer', $command, sprintf('--working-dir=%s', $targetDir)], $arguments));
         $process->mustRun();
     }
 }
