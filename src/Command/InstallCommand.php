@@ -18,6 +18,7 @@ final class InstallCommand extends AbstractToolCommand
 {
     private const WRAPPER = <<<BASH
 #!/bin/bash
+# This file was created automatically by cotor.phar as a tool wrapper.
 
 DIR=$(realpath "$(dirname "\${BASH_SOURCE[0]}")")
 
