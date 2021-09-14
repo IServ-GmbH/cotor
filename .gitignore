@@ -4,3 +4,4 @@
 /composer.lock
 /cotor.phar
 /tools/*/vendor/
+/.php-cs-fixer.cache
