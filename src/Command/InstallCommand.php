@@ -90,8 +90,9 @@ BASH;
         $this->filesystem->mkdir($targetDir);
 
         try {
-            $this->runComposerWithPackage('require', $targetDir, $vendor, $name);
+            $this->filesystem->dumpFile($targetDir . '/composer.json', '{}');
             $this->runComposerWithArguments('config', $targetDir, 'platform.php', '7.3.19'); // TODO: Remove PHP 8 workaround!
+            $this->runComposerWithPackage('require', $targetDir, $vendor, $name);
         } catch (ProcessFailedException $e) {
             $io->error('Failed to run composer: ' . $e->getProcess()->getErrorOutput());
 
