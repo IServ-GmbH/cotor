@@ -91,6 +91,7 @@ BASH;
         }
 
         $this->filesystem->mkdir($targetDir);
+        $this->filesystem->dumpFile($targetDir . '/.gitignore', "/vendor\n");
 
         try {
             $this->filesystem->dumpFile($targetDir . '/composer.json', '{}');
