@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace IServ\ComposerToolsInstaller\Command;
 
+use IServ\ComposerToolsInstaller\Domain\Composer;
+use IServ\ComposerToolsInstaller\Domain\Package;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -70,29 +72,43 @@ BASH;
             $this->filesystem->mkdir($toolsDir);
         }
 
-        /** @var array<string, mixed>|null $composer */
-        $composerIndent4 = false;
         $composer = null;
         $composerPath = getcwd() . '/composer.json';
         if ($this->filesystem->exists($composerPath)) {
             try {
-                $composerContent = file_get_contents($composerPath);
-                /** @var array<string, mixed> $composer */
-                $composer = json_decode($composerContent, true, 512, JSON_THROW_ON_ERROR);
-                $composerIndent4 = preg_match('/^\s\s\s\s"name"/', $composerContent);
+                $composer = new Composer(file_get_contents($composerPath));
             } catch (\JsonException $e) {
                 $io->warning('Failed to parse composer.json: ' . $e->getMessage());
             }
         }
 
         try {
-            [$vendor, $name] = $this->getVendorAndName($name);
+            $package = $this->getPackage($name);
         } catch (\InvalidArgumentException $e) {
             $io->error(sprintf('Unknown tool %s!', $name));
 
             return Command::INVALID;
         }
 
+        if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force)) {
+            return $exitCode;
+        }
+
+        if (null !== $composer) {
+            $this->updateComposer($composer, $composerPath, $package, $io);
+        }
+
+        $io->success(sprintf('%s installed successfully.', $name));
+
+        return Command::SUCCESS;
+    }
+
+    /**
+     * Install given tool
+     */
+    protected function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force): ?int
+    {
+        $name = $package->getName(); // Use normalized name
         $targetDir = $toolsDir . '/' . $name;
 
         if (is_dir($targetDir)) {
@@ -111,7 +127,7 @@ BASH;
         try {
             $this->filesystem->dumpFile($targetDir . '/composer.json', '{}');
             $this->runComposerWithArguments('config', $targetDir, 'platform.php', '7.3.19'); // TODO: Remove PHP 8 workaround!
-            $this->runComposerWithPackage('require', $targetDir, $vendor, $name);
+            $this->runComposerWithPackage('require', $targetDir, $package);
         } catch (ProcessFailedException $e) {
             /** @var Process $process */
             $process = $e->getProcess(); // Make psalm happy :/
@@ -131,25 +147,27 @@ BASH;
             $this->filesystem->chmod($pharPath, 755);
         }
 
-        // Add tool to composer extras
-        $package = $vendor . '/' . $name;
-        /** @var array{extras: array{cotor: array<string, string>}} $composer */
-        if (null !== $composer && !isset($composer['extras']['cotor'][$package])) {
-            $composer['extras']['cotor'][$package] = '*';
-            ksort($composer['extras']['cotor']);
-            try {
-                $composerContent = json_encode($composer, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-                if (!$composerIndent4) {
-                    $composerContent = preg_replace('/^(  +?)\\1(?=[^ ])/m', '$1', $composerContent);
-                }
-                $this->filesystem->dumpFile($composerPath, $composerContent);
-            } catch (\JsonException $e) {
-                $io->warning('Failed to update composer.json: ' . $e->getMessage());
-            }
+        return null;
+    }
+
+    /**
+     * Add tool to composer extras
+     */
+    protected function updateComposer(Composer $composer, string $composerPath, Package $package, SymfonyStyle $io): void
+    {
+        /** @var array{extras: array{cotor: array<string, string>}} $composerJson */
+        $composerJson = $composer->getJson();
+        if (isset($composerJson['extras']['cotor'][$package->getComposerName()])) {
+            return;
         }
 
-        $io->success(sprintf('%s installed successfully.', $name));
-
-        return Command::SUCCESS;
+        $composerJson['extras']['cotor'][$package->getComposerName()] = $package->getVersion();
+        ksort($composerJson['extras']['cotor']);
+        try {
+            $composer->setJson($composerJson);
+            $this->filesystem->dumpFile($composerPath, $composer->toPrettyJsonString());
+        } catch (\JsonException $e) {
+            $io->warning('Failed to update composer.json: ' . $e->getMessage());
+        }
     }
 }

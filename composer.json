@@ -23,7 +23,8 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://composer.iserv.eu"
+      "url": "https://composer.iserv.eu",
+      "only": ["iserv/*"]
     }
   ],
   "bin": [

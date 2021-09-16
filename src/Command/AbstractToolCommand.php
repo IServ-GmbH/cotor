@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IServ\ComposerToolsInstaller\Command;
 
+use IServ\ComposerToolsInstaller\Domain\Package;
 use IServ\ComposerToolsInstaller\Tools\ToolsRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -16,10 +17,7 @@ abstract class AbstractToolCommand extends Command
         return getcwd() . '/tools';
     }
 
-    /**
-     * @return array<int, string>
-     */
-    protected function getVendorAndName(string $name): array
+    protected function getPackage(string $name): Package
     {
         if (!str_contains($name, '/')) {
             if (!isset(ToolsRegistry::getRegisteredTools()[$name])) {
@@ -29,15 +27,15 @@ abstract class AbstractToolCommand extends Command
             $name = ToolsRegistry::getRegisteredTools()[$name];
         }
 
-        return explode('/', $name, 2);
+        return new Package(...explode('/', $name, 2));
     }
 
     /**
      * @throws ProcessFailedException
      */
-    protected function runComposerWithPackage(string $command, string $targetDir, string $vendor, string $name): void
+    protected function runComposerWithPackage(string $command, string $targetDir, Package $package): void
     {
-        $process = new Process(['composer', $command, sprintf('--working-dir=%s', $targetDir), $vendor . '/' . $name]);
+        $process = new Process(['composer', $command, sprintf('--working-dir=%s', $targetDir), $package->getComposerName()]);
         $process->mustRun();
     }
 

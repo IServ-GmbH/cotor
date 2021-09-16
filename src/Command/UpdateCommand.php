@@ -38,13 +38,14 @@ final class UpdateCommand extends AbstractToolCommand
         }
 
         try {
-            [, $name] = $this->getVendorAndName($name);
+            $package = $this->getPackage($name);
         } catch (\InvalidArgumentException $e) {
             $io->error(sprintf('Unknown tool %s!', $name));
 
             return Command::INVALID;
         }
 
+        $name = $package->getName();
         $targetDir = $toolsDir . '/' . $name;
 
         if (!is_dir($targetDir)) {
