@@ -28,5 +28,12 @@
   ],
   "bin": [
     "bin/composertoolsinstaller"
-  ]
+  ],
+  "extras": {
+    "cotor": {
+      "friendsofphp/php-cs-fixer": "*",
+      "phpstan/phpstan": "*",
+      "vimeo/psalm": "*"
+    }
+  }
 }

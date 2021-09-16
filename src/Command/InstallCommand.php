@@ -70,6 +70,21 @@ BASH;
             $this->filesystem->mkdir($toolsDir);
         }
 
+        /** @var array<string, mixed>|null $composer */
+        $composerIndent4 = false;
+        $composer = null;
+        $composerPath = getcwd() . '/composer.json';
+        if ($this->filesystem->exists($composerPath)) {
+            try {
+                $composerContent = file_get_contents($composerPath);
+                /** @var array<string, mixed> $composer */
+                $composer = json_decode($composerContent, true, 512, JSON_THROW_ON_ERROR);
+                $composerIndent4 = preg_match('/^\s\s\s\s"name"/', $composerContent);
+            } catch (\JsonException $e) {
+                $io->warning('Failed to parse composer.json: ' . $e->getMessage());
+            }
+        }
+
         try {
             [$vendor, $name] = $this->getVendorAndName($name);
         } catch (\InvalidArgumentException $e) {
@@ -114,6 +129,23 @@ BASH;
         if (!$this->filesystem->exists($pharPath)) {
             $this->filesystem->dumpFile($pharPath, str_replace('%NAME%', $name, self::WRAPPER));
             $this->filesystem->chmod($pharPath, 755);
+        }
+
+        // Add tool to composer extras
+        $package = $vendor . '/' . $name;
+        /** @var array{extras: array{cotor: array<string, string>}} $composer */
+        if (null !== $composer && !isset($composer['extras']['cotor'][$package])) {
+            $composer['extras']['cotor'][$package] = '*';
+            ksort($composer['extras']['cotor']);
+            try {
+                $composerContent = json_encode($composer, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+                if (!$composerIndent4) {
+                    $composerContent = preg_replace('/^(  +?)\\1(?=[^ ])/m', '$1', $composerContent);
+                }
+                $this->filesystem->dumpFile($composerPath, $composerContent);
+            } catch (\JsonException $e) {
+                $io->warning('Failed to update composer.json: ' . $e->getMessage());
+            }
         }
 
         $io->success(sprintf('%s installed successfully.', $name));
