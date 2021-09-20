@@ -7,7 +7,6 @@ namespace IServ\ComposerToolsInstaller\Command;
 use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Package;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -46,31 +45,24 @@ BASH;
     protected function configure(): void
     {
         $this
-            ->setDescription('Installs a tool')
-            ->setHelp('This command allows you to install a composer based tool.')
-            ->addArgument('name', InputArgument::REQUIRED, 'The short name of the tool or its composer name')
+            ->setDescription('Installs tools')
+            ->setHelp('This command allows you to install composer based tools.')
+            ->addArgument('name', InputArgument::OPTIONAL, 'The short name of the tool or its composer name. Leave empty to install tools from your composer.json.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force installation of the tool. Will remove current installation.')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
+        $toolsDir = $this->getToolsDir();
+
+        if (null !== $exitCode = $this->ensureToolsDir($toolsDir, $io)) {
+            return $exitCode;
+        }
+
         $name = (string)$input->getArgument('name');
         $force = (bool)$input->getOption('force');
-        $io = new SymfonyStyle($input, $output);
-
-        $toolsDir = $this->getToolsDir();
-        if (!is_dir($toolsDir)) {
-            /** @var QuestionHelper $helper */
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion('There is no tools directory. Do you want to create it now?', false);
-
-            if (!$helper->ask($input, $output, $question)) {
-                return Command::SUCCESS;
-            }
-
-            $this->filesystem->mkdir($toolsDir);
-        }
 
         $composer = null;
         $composerPath = getcwd() . '/composer.json';
@@ -82,23 +74,52 @@ BASH;
             }
         }
 
-        try {
-            $package = $this->getPackage($name);
-        } catch (\InvalidArgumentException $e) {
-            $io->error(sprintf('Unknown tool %s!', $name));
+        // Check single package vs extras mode
+        $useVersion = false;
+        $tools = [];
+        if ('' === $name) {
+            if (null === $composer) {
+                $io->error('No composer.json found!.');
 
-            return Command::INVALID;
+                return Command::INVALID;
+            }
+
+            $composerJson = $composer->getJson();
+            if (empty($composerJson['extras']['cotor'])) {
+                $io->error('No tools specified in composer.json. Please give the short name of the tool or its composer name for installation.');
+
+                return Command::INVALID;
+            }
+
+            foreach ($composerJson['extras']['cotor'] as $name => $version) {
+                $tools[] = Package::createFromComposerName($name, $version);
+            }
+            $useVersion = true;
+
+            foreach ($tools as $package) {
+                if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
+                    $io->writeln(sprintf('<info>✓</info> %s installed successfully.', $package->getName()));
+                }
+            }
+        } else {
+            try {
+                $package = $this->getPackage($name);
+            } catch (\InvalidArgumentException $e) {
+                $io->error(sprintf('Unknown tool %s!', $name));
+
+                return Command::INVALID;
+            }
+
+            if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
+                return $exitCode;
+            }
+
+            if (null !== $composer) {
+                $this->updateComposer($composer, $composerPath, $package, $io);
+            }
+
+            $io->success(sprintf('%s installed successfully.', $name));
         }
-
-        if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force)) {
-            return $exitCode;
-        }
-
-        if (null !== $composer) {
-            $this->updateComposer($composer, $composerPath, $package, $io);
-        }
-
-        $io->success(sprintf('%s installed successfully.', $name));
 
         return Command::SUCCESS;
     }
@@ -106,7 +127,7 @@ BASH;
     /**
      * Install given tool
      */
-    protected function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force): ?int
+    protected function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion): ?int
     {
         $name = $package->getName(); // Use normalized name
         $targetDir = $toolsDir . '/' . $name;
@@ -115,7 +136,7 @@ BASH;
             if ($force) {
                 $this->filesystem->remove($targetDir);
             } else {
-                $io->warning(sprintf('%s is already installed. You can update it with "cotor.phar update phpstan" or force a re-installation with the "--force" flag.', $name));
+                $io->warning(sprintf('%s is already installed. You can update it with "cotor.phar update %1$s" or force a re-installation with the "--force" flag.', $name));
 
                 return Command::INVALID;
             }
@@ -127,7 +148,7 @@ BASH;
         try {
             $this->filesystem->dumpFile($targetDir . '/composer.json', '{}');
             $this->runComposerWithArguments('config', $targetDir, 'platform.php', '7.3.19'); // TODO: Remove PHP 8 workaround!
-            $this->runComposerWithPackage('require', $targetDir, $package);
+            $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
         } catch (ProcessFailedException $e) {
             /** @var Process $process */
             $process = $e->getProcess(); // Make psalm happy :/
@@ -169,5 +190,23 @@ BASH;
         } catch (\JsonException $e) {
             $io->warning('Failed to update composer.json: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Checks if tools dir exists or asks user about creation.
+     */
+    protected function ensureToolsDir(string $toolsDir, SymfonyStyle $io): ?int
+    {
+        if (!is_dir($toolsDir)) {
+            $question = new ConfirmationQuestion('There is no tools directory. Do you want to create it now?', false);
+
+            if (!$io->askQuestion($question)) {
+                return Command::SUCCESS;
+            }
+
+            $this->filesystem->mkdir($toolsDir);
+        }
+
+        return null;
     }
 }

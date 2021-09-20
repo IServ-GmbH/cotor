@@ -5,6 +5,6 @@
         }
     },
     "require": {
-        "vimeo/psalm": "^4.10"
+        "vimeo/psalm": "*"
     }
 }

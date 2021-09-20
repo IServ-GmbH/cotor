@@ -5,6 +5,6 @@
         }
     },
     "require": {
-        "friendsofphp/php-cs-fixer": "^3.1"
+        "friendsofphp/php-cs-fixer": "*"
     }
 }

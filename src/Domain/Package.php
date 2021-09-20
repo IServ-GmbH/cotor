@@ -22,6 +22,13 @@ final class Package
         $this->version = $version;
     }
 
+    public static function createFromComposerName(string $vendorName, string $version): self
+    {
+        [$vendor, $name] = explode('/', $vendorName, 2);
+
+        return new self($vendor, $name, $version);
+    }
+
     public function getComposerName(): string
     {
         return $this->vendor . '/' . $this->name;
