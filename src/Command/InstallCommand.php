@@ -91,6 +91,10 @@ BASH;
                 return Command::INVALID;
             }
 
+            /**
+             * @var string $name
+             * @var string $version
+             */
             foreach ($composerJson['extras']['cotor'] as $name => $version) {
                 $tools[] = Package::createFromComposerName($name, $version);
             }
