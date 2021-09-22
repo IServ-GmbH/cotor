@@ -24,7 +24,9 @@
     {
       "type": "composer",
       "url": "https://composer.iserv.eu",
-      "only": ["iserv/*"]
+      "only": [
+        "iserv/*"
+      ]
     }
   ],
   "bin": [
@@ -32,9 +34,9 @@
   ],
   "extras": {
     "cotor": {
-      "friendsofphp/php-cs-fixer": "*",
-      "phpstan/phpstan": "*",
-      "vimeo/psalm": "*"
+      "friendsofphp/php-cs-fixer": "^3.1",
+      "phpstan/phpstan": "^0.12",
+      "vimeo/psalm": "^4.10"
     }
   }
 }

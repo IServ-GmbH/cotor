@@ -6,6 +6,7 @@ namespace IServ\ComposerToolsInstaller\Command;
 
 use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Package;
+use IServ\ComposerToolsInstaller\Domain\SemVer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -118,8 +119,10 @@ BASH;
                 return $exitCode;
             }
 
+            $package = $this->getInstalledPackageVersion($toolsDir, $package, $io);
+
             if (null !== $composer) {
-                $this->updateComposer($composer, $composerPath, $package, $io);
+                $this->updateComposer($composer, $composerPath, $package, $io, $force);
             }
 
             $io->success(sprintf('%s installed successfully.', $name));
@@ -178,11 +181,11 @@ BASH;
     /**
      * Add tool to composer extras
      */
-    protected function updateComposer(Composer $composer, string $composerPath, Package $package, SymfonyStyle $io): void
+    protected function updateComposer(Composer $composer, string $composerPath, Package $package, SymfonyStyle $io, bool $replace = false): void
     {
         /** @var array{extras: array{cotor: array<string, string>}} $composerJson */
         $composerJson = $composer->getJson();
-        if (isset($composerJson['extras']['cotor'][$package->getComposerName()])) {
+        if (!$replace && isset($composerJson['extras']['cotor'][$package->getComposerName()])) {
             return;
         }
 
@@ -212,5 +215,38 @@ BASH;
         }
 
         return null;
+    }
+
+    protected function getInstalledPackageVersion(string $toolsDir, Package $package, SymfonyStyle $io): Package
+    {
+        // Get installed version
+        $toolComposerLockName = $toolsDir . '/' . $package->getName() . '/composer.lock';
+        if (!$this->filesystem->exists($toolComposerLockName)) {
+            $io->warning(sprintf('Could not find composer.lock of %s!', $package->getName()));
+
+            return $package;
+        }
+
+        $toolComposerLock = file_get_contents($toolComposerLockName);
+        $toolComposerJson = (new Composer($toolComposerLock))->getJson();
+        $toolVersion = '*';
+
+        /** @var array<string, mixed> $installedPackage */
+        foreach ($toolComposerJson['packages'] ?? [] as $installedPackage) {
+            if ($installedPackage['name'] === $package->getComposerName()) {
+                $toolVersion = (string)$installedPackage['version'];
+            }
+        }
+
+        if ('*' !== $toolVersion) {
+            try {
+                $toolVersion = (new SemVer($toolVersion))->toMinorConstraint();
+                $package = $package->withVersion($toolVersion);
+            } catch (\InvalidArgumentException $e) {
+                $io->warning(sprintf('Could not parse composer.lock of %s: %s', $package->getName(), $e->getMessage()));
+            }
+        }
+
+        return $package;
     }
 }

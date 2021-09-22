@@ -29,6 +29,15 @@ final class Package
         return new self($vendor, $name, $version);
     }
 
+    public function withVersion(string $version): self
+    {
+        $self = clone $this;
+
+        $self->version = $version;
+
+        return $self;
+    }
+
     public function getComposerName(): string
     {
         return $this->vendor . '/' . $this->name;
