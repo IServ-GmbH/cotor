@@ -31,6 +31,13 @@ exec \$DIR/%NAME%/vendor/bin/%NAME% "$@"
 
 BASH;
 
+    private const GITIGNORE = <<<GI
+/vendor/
+/composer.lock
+
+GI;
+
+
     protected static $defaultName = 'install';
 
     /** @var Filesystem */
@@ -125,7 +132,7 @@ BASH;
                 $this->updateComposer($composer, $composerPath, $package, $io, $force);
             }
 
-            $io->success(sprintf('%s installed successfully.', $name));
+            $io->success(sprintf('%s installed successfully.', $package->getName()));
         }
 
         return Command::SUCCESS;
@@ -150,11 +157,9 @@ BASH;
         }
 
         $this->filesystem->mkdir($targetDir);
-        $this->filesystem->dumpFile($targetDir . '/.gitignore', "/vendor\n");
+        $this->filesystem->dumpFile($targetDir . '/.gitignore', self::GITIGNORE);
 
         try {
-            $this->filesystem->dumpFile($targetDir . '/composer.json', '{}');
-            $this->runComposerWithArguments('config', $targetDir, 'platform.php', '7.3.19'); // TODO: Remove PHP 8 workaround!
             $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
         } catch (ProcessFailedException $e) {
             /** @var Process $process */
