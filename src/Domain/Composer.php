@@ -33,6 +33,8 @@ final class Composer
             $composerContent = preg_replace('/^(  +?)\\1(?=[^ ])/m', '$1', $composerContent);
         }
 
+        $composerContent .= "\n";
+
         return $composerContent;
     }
 
