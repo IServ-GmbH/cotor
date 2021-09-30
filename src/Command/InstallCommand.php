@@ -177,7 +177,7 @@ GI;
 
         if (!$this->filesystem->exists($pharPath)) {
             $this->filesystem->dumpFile($pharPath, str_replace('%NAME%', $name, self::WRAPPER));
-            $this->filesystem->chmod($pharPath, 755);
+            $this->filesystem->chmod($pharPath, 0755);
         }
 
         return null;

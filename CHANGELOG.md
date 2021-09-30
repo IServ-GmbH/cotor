@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed making phars executable.
+
 ## 1.0 - 2021-09-28
 
 ### Added
