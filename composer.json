@@ -32,7 +32,7 @@
   "bin": [
     "bin/composertoolsinstaller"
   ],
-  "extras": {
+  "extra": {
     "cotor": {
       "friendsofphp/php-cs-fixer": "^3.1",
       "phpstan/phpstan": "^0.12",

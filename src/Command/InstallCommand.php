@@ -82,7 +82,23 @@ GI;
             }
         }
 
-        // Check single package vs extras mode
+        // Fix stupid earlier me
+        if (null !== $composer) {
+            $composerJson = $composer->getJson();
+            if (isset($composerJson['extras']['cotor'])) {
+                $composerJson['extra']['cotor'] = $composerJson['extras']['cotor'];
+                unset($composerJson['extras']);
+                try {
+                    $composer->setJson($composerJson);
+                    $this->filesystem->dumpFile($composerPath, $composer->toPrettyJsonString());
+                } catch (\JsonException $e) {
+                    $io->warning('Failed to fix composer.json: ' . $e->getMessage());
+                }
+            }
+            unset($composerJson);
+        }
+
+        // Check single package vs extra mode
         $useVersion = false;
         $tools = [];
         if ('' === $name) {
@@ -93,7 +109,7 @@ GI;
             }
 
             $composerJson = $composer->getJson();
-            if (empty($composerJson['extras']['cotor'])) {
+            if (empty($composerJson['extra']['cotor'])) {
                 $io->error('No tools specified in composer.json. Please give the short name of the tool or its composer name for installation.');
 
                 return Command::INVALID;
@@ -103,7 +119,7 @@ GI;
              * @var string $name
              * @var string $version
              */
-            foreach ($composerJson['extras']['cotor'] as $name => $version) {
+            foreach ($composerJson['extra']['cotor'] as $name => $version) {
                 $tools[] = Package::createFromComposerName($name, $version);
             }
             $useVersion = true;
@@ -184,18 +200,18 @@ GI;
     }
 
     /**
-     * Add tool to composer extras
+     * Add tool to composer extra
      */
     protected function updateComposer(Composer $composer, string $composerPath, Package $package, SymfonyStyle $io, bool $replace = false): void
     {
-        /** @var array{extras: array{cotor: array<string, string>}} $composerJson */
+        /** @var array{extra?: array{cotor: array<string, string>}} $composerJson */
         $composerJson = $composer->getJson();
-        if (!$replace && isset($composerJson['extras']['cotor'][$package->getComposerName()])) {
+        if (!$replace && isset($composerJson['extra']['cotor'][$package->getComposerName()])) {
             return;
         }
 
-        $composerJson['extras']['cotor'][$package->getComposerName()] = $package->getVersion();
-        ksort($composerJson['extras']['cotor']);
+        $composerJson['extra']['cotor'][$package->getComposerName()] = $package->getVersion();
+        ksort($composerJson['extra']['cotor']);
         try {
             $composer->setJson($composerJson);
             $this->filesystem->dumpFile($composerPath, $composer->toPrettyJsonString());

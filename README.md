@@ -7,7 +7,7 @@ For each tool a standalone folder named by the package without the vendor will b
 
 ### Commands
 
-* **install**: Installs all tools listed in your composer.json at `extras.cotor`.
+* **install**: Installs all tools listed in your composer.json at `extra.cotor`.
 * **install $name**: Install a new tool. `$name` must be a tool's composer or registered shortcut name.
 * **update $name**: Updates an installed tool. `$name` must be a tool's name without vendor or registered shortcut name.
 * **update-all**: Updates all installed tools.
