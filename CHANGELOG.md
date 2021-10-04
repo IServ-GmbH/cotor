@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.0.2 - 2021-10-04
+
 ### Fixed
 
 - Fixed using Composer "extras" instead of "extra".
