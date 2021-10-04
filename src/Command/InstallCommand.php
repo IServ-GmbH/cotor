@@ -85,6 +85,7 @@ GI;
         // Fix stupid earlier me
         if (null !== $composer) {
             $composerJson = $composer->getJson();
+            /** @var array{extras?: array{cotor: array<string, string>}} $composerJson */
             if (isset($composerJson['extras']['cotor'])) {
                 $composerJson['extra']['cotor'] = $composerJson['extras']['cotor'];
                 unset($composerJson['extras']);
