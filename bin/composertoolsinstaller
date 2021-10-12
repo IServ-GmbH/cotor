@@ -8,8 +8,11 @@ require __DIR__ . '/../vendor/autoload.php';
 use IServ\ComposerToolsInstaller\Application;
 use IServ\ComposerToolsInstaller\Command;
 
+$filesystem = new Symfony\Component\Filesystem\Filesystem();
+
 $application = new Application('Composer Tools Installer', '@package_version@');
-$application->add(new Command\InstallCommand(new Symfony\Component\Filesystem\Filesystem()));
+$application->add(new Command\InstallCommand($filesystem));
+$application->add(new Command\ExtendCommand($filesystem));
 $application->add(new Command\UpdateCommand());
 $application->add(new Command\UpdateAllCommand());
 $application->run();

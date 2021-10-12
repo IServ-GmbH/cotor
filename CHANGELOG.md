@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## Added
+
+- Allow installing extensions for tools. #42932
+
 ## 1.0.2 - 2021-10-04
 
 ### Fixed

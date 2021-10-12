@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace IServ\ComposerToolsInstaller\Command;
 
 use IServ\ComposerToolsInstaller\Domain\Composer;
+use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
-use IServ\ComposerToolsInstaller\Domain\SemVer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,11 +14,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-final class InstallCommand extends AbstractToolCommand
+final class InstallCommand extends AbstractComposerCommand
 {
     private const WRAPPER = <<<BASH
 #!/bin/bash
@@ -37,18 +36,7 @@ BASH;
 
 GI;
 
-
     protected static $defaultName = 'install';
-
-    /** @var Filesystem */
-    protected $filesystem;
-
-    public function __construct(Filesystem $filesystem)
-    {
-        $this->filesystem = $filesystem;
-
-        parent::__construct();
-    }
 
     protected function configure(): void
     {
@@ -86,8 +74,8 @@ GI;
         if (null !== $composer) {
             $composerJson = $composer->getJson();
             /** @var array{extras?: array{cotor: array<string, string>}} $composerJson */
-            if (isset($composerJson['extras']['cotor'])) {
-                $composerJson['extra']['cotor'] = $composerJson['extras']['cotor'];
+            if (isset($composerJson['extras'][Cotor::COMPOSER_EXTRA])) {
+                $composerJson['extra'][Cotor::COMPOSER_EXTRA] = $composerJson['extras'][Cotor::COMPOSER_EXTRA];
                 unset($composerJson['extras']);
                 try {
                     $composer->setJson($composerJson);
@@ -110,7 +98,7 @@ GI;
             }
 
             $composerJson = $composer->getJson();
-            if (empty($composerJson['extra']['cotor'])) {
+            if (empty($composerJson['extra'][Cotor::COMPOSER_EXTRA])) {
                 $io->error('No tools specified in composer.json. Please give the short name of the tool or its composer name for installation.');
 
                 return Command::INVALID;
@@ -120,7 +108,11 @@ GI;
              * @var string $name
              * @var string $version
              */
-            foreach ($composerJson['extra']['cotor'] as $name => $version) {
+            foreach ($composerJson['extra'][Cotor::COMPOSER_EXTRA] as $name => $version) {
+                if (Cotor::COMPOSER_EXTRA_EXTENSIONS === $name) {
+                    continue;
+                }
+
                 $tools[] = Package::createFromComposerName($name, $version);
             }
             $useVersion = true;
@@ -128,6 +120,33 @@ GI;
             foreach ($tools as $package) {
                 if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
                     $io->writeln(sprintf('<info>✓</info> %s installed successfully.', $package->getName()));
+                }
+            }
+
+            // Install extensions
+            /** @var array{extra: array{cotor: array{extensions?: array<string, array<string, string>>}}} $composerJson */
+            if (!empty($composerJson['extra'][Cotor::COMPOSER_EXTRA][Cotor::COMPOSER_EXTRA_EXTENSIONS])) {
+                /**
+                 * Psalm why ya so nit-picky??!
+                 *
+                 * @psalm-suppress MixedArrayAccess
+                 * @var string $toolName
+                 * @var array<string, string> $packages
+                 */
+                foreach ($composerJson['extra'][Cotor::COMPOSER_EXTRA][Cotor::COMPOSER_EXTRA_EXTENSIONS] as $toolName => $packages) {
+                    if (empty($packages)) {
+                        $io->writeln(sprintf('<alert>❗</alert> %s has empty extensions configuration.', $toolName));
+
+                        continue;
+                    }
+
+                    $package = Package::createFromComposerName($toolName);
+                    foreach ($packages as $name => $version) {
+                        $extension = Package::createFromComposerName($name, $version);
+                        if (null === $this->installExtension($package, $extension, $toolsDir, $io)) {
+                            $io->writeln(sprintf('<info>✓</info> Extension %s for %s installed successfully.', $extension->getName(), $package->getVendor()));
+                        }
+                    }
                 }
             }
         } else {
@@ -158,10 +177,10 @@ GI;
     /**
      * Install given tool
      */
-    protected function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion): ?int
+    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion): ?int
     {
         $name = $package->getName(); // Use normalized name
-        $targetDir = $toolsDir . '/' . $name;
+        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
 
         if (is_dir($targetDir)) {
             if ($force) {
@@ -174,7 +193,7 @@ GI;
         }
 
         $this->filesystem->mkdir($targetDir);
-        $this->filesystem->dumpFile($targetDir . '/.gitignore', self::GITIGNORE);
+        $this->filesystem->dumpFile($targetDir . DIRECTORY_SEPARATOR . '.gitignore', self::GITIGNORE);
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
@@ -201,18 +220,51 @@ GI;
     }
 
     /**
+     * Install given extension
+     */
+    private function installExtension(Package $package, Package $extension, string $toolsDir, SymfonyStyle $io): ?int
+    {
+        $name = $package->getName(); // Use normalized name
+        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
+
+        if (!is_dir($targetDir)) {
+            $io->warning(sprintf('%s is not installed. You can install it with "cotor.phar install %1$s"', $name));
+
+            return Command::FAILURE;
+        }
+
+        // Check if extension is installed
+        $extensionDir = $targetDir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $extension->getComposerName();
+        if (is_dir($extensionDir)) {
+            $io->writeln(sprintf('[INFO] %s is already installed. Skipping...', $extension->getComposerName()), OutputInterface::VERBOSITY_VERBOSE);
+
+            return Command::FAILURE;
+        }
+
+        try {
+            $this->runComposerWithPackage('require', $targetDir, $extension, true);
+        } catch (ProcessFailedException $e) {
+            /** @var Process $process */
+            $process = $e->getProcess(); // Make psalm happy :/
+            $io->warning('Failed to run composer: ' . $process->getErrorOutput());
+        }
+
+        return null;
+    }
+
+    /**
      * Add tool to composer extra
      */
-    protected function updateComposer(Composer $composer, string $composerPath, Package $package, SymfonyStyle $io, bool $replace = false): void
+    private function updateComposer(Composer $composer, string $composerPath, Package $package, SymfonyStyle $io, bool $replace = false): void
     {
         /** @var array{extra?: array{cotor: array<string, string>}} $composerJson */
         $composerJson = $composer->getJson();
-        if (!$replace && isset($composerJson['extra']['cotor'][$package->getComposerName()])) {
+        if (!$replace && isset($composerJson['extra'][Cotor::COMPOSER_EXTRA][$package->getComposerName()])) {
             return;
         }
 
-        $composerJson['extra']['cotor'][$package->getComposerName()] = $package->getVersion();
-        ksort($composerJson['extra']['cotor']);
+        $composerJson['extra'][Cotor::COMPOSER_EXTRA][$package->getComposerName()] = $package->getVersion();
+        ksort($composerJson['extra'][Cotor::COMPOSER_EXTRA]);
         try {
             $composer->setJson($composerJson);
             $this->filesystem->dumpFile($composerPath, $composer->toPrettyJsonString());
@@ -224,7 +276,7 @@ GI;
     /**
      * Checks if tools dir exists or asks user about creation.
      */
-    protected function ensureToolsDir(string $toolsDir, SymfonyStyle $io): ?int
+    private function ensureToolsDir(string $toolsDir, SymfonyStyle $io): ?int
     {
         if (!is_dir($toolsDir)) {
             $question = new ConfirmationQuestion('There is no tools directory. Do you want to create it now?', false);
@@ -237,38 +289,5 @@ GI;
         }
 
         return null;
-    }
-
-    protected function getInstalledPackageVersion(string $toolsDir, Package $package, SymfonyStyle $io): Package
-    {
-        // Get installed version
-        $toolComposerLockName = $toolsDir . '/' . $package->getName() . '/composer.lock';
-        if (!$this->filesystem->exists($toolComposerLockName)) {
-            $io->warning(sprintf('Could not find composer.lock of %s!', $package->getName()));
-
-            return $package;
-        }
-
-        $toolComposerLock = file_get_contents($toolComposerLockName);
-        $toolComposerJson = (new Composer($toolComposerLock))->getJson();
-        $toolVersion = '*';
-
-        /** @var array<string, mixed> $installedPackage */
-        foreach ($toolComposerJson['packages'] ?? [] as $installedPackage) {
-            if ($installedPackage['name'] === $package->getComposerName()) {
-                $toolVersion = (string)$installedPackage['version'];
-            }
-        }
-
-        if ('*' !== $toolVersion) {
-            try {
-                $toolVersion = (new SemVer($toolVersion))->toMinorConstraint();
-                $package = $package->withVersion($toolVersion);
-            } catch (\InvalidArgumentException $e) {
-                $io->warning(sprintf('Could not parse composer.lock of %s: %s', $package->getName(), $e->getMessage()));
-            }
-        }
-
-        return $package;
     }
 }

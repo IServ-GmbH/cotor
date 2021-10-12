@@ -30,7 +30,7 @@ final class UpdateCommand extends AbstractToolCommand
         $io = new SymfonyStyle($input, $output);
         $name = (string)$input->getArgument('name');
 
-        $toolsDir = getcwd() . '/tools';
+        $toolsDir = $this->getToolsDir();
         if (!is_dir($toolsDir)) {
             $io->error('There is no tools directory! Did you miss to install something first?');
 
