@@ -3,3 +3,4 @@
 /.gitignore export-ignore
 /make.targets export-ignore
 /.gitlab-ci.yml export-ignore
+/tools export-ignore
