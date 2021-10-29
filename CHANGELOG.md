@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.2 - 2021-10-29
+
 ### Changed
 
 - Updated tool integration with new extensionless executable and hidden tool directory. #43650
