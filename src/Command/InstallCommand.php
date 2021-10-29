@@ -21,12 +21,12 @@ final class InstallCommand extends AbstractComposerCommand
 {
     private const WRAPPER = <<<BASH
 #!/bin/bash
-# This file was created automatically by cotor.phar as a tool wrapper.
+# This file was created automatically by cotor as a tool wrapper.
 
 DIR=$(realpath "$(dirname "\${BASH_SOURCE[0]}")")
 
-composer install --working-dir=\$DIR/%NAME% --quiet
-exec \$DIR/%NAME%/vendor/bin/%NAME% "$@"
+composer install --working-dir=\$DIR/.%NAME% --quiet
+exec \$DIR/.%NAME%/vendor/bin/%NAME% "$@"
 
 BASH;
 
@@ -45,6 +45,7 @@ GI;
             ->setHelp('This command allows you to install composer based tools.')
             ->addArgument('name', InputArgument::OPTIONAL, 'The short name of the tool or its composer name. Leave empty to install tools from your composer.json.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force installation of the tool. Will remove current installation.')
+            ->addOption('no-phive', null, InputOption::VALUE_NONE, 'Do not install with wrapper for phive.')
         ;
     }
 
@@ -59,6 +60,7 @@ GI;
 
         $name = (string)$input->getArgument('name');
         $force = (bool)$input->getOption('force');
+        $noPhive = (bool)$input->getOption('no-phive');
 
         $composer = null;
         $composerPath = getcwd() . '/composer.json';
@@ -118,7 +120,7 @@ GI;
             $useVersion = true;
 
             foreach ($tools as $package) {
-                if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
+                if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion, $noPhive)) {
                     $io->writeln(sprintf('<info>✓</info> %s installed successfully.', $package->getName()));
                 }
             }
@@ -158,7 +160,7 @@ GI;
                 return Command::INVALID;
             }
 
-            if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
+            if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, $useVersion, $noPhive)) {
                 return $exitCode;
             }
 
@@ -177,10 +179,16 @@ GI;
     /**
      * Install given tool
      */
-    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion): ?int
+    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion, bool $noPhive): ?int
     {
         $name = $package->getName(); // Use normalized name
-        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
+        $legacyDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
+        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . '.' . $name;
+
+        // Remove legacy dirs on demand
+        if (is_dir($legacyDir)) {
+            $this->filesystem->remove($legacyDir);
+        }
 
         if (is_dir($targetDir)) {
             if ($force) {
@@ -205,15 +213,29 @@ GI;
             return Command::FAILURE;
         }
 
-        // Create wrapper as tools/$name.phar to replace phive transparently
+        // Create executable as tools/$name
+        $xPath = sprintf('%s/%s', $toolsDir, $name);
+        if ($force && $this->filesystem->exists($xPath)) {
+            $this->filesystem->remove($xPath);
+        }
+
+        if (!$this->filesystem->exists($xPath)) {
+            $this->filesystem->dumpFile($xPath, str_replace('%NAME%', $name, self::WRAPPER));
+            $this->filesystem->chmod($xPath, 0755);
+        }
+
+        if ($noPhive) {
+            return null;
+        }
+
         $pharPath = sprintf('%s/%s.phar', $toolsDir, $name);
         if ($force && $this->filesystem->exists($pharPath)) {
             $this->filesystem->remove($pharPath);
         }
 
+        // Create symlink as tools/$name.phar to replace phive transparently
         if (!$this->filesystem->exists($pharPath)) {
-            $this->filesystem->dumpFile($pharPath, str_replace('%NAME%', $name, self::WRAPPER));
-            $this->filesystem->chmod($pharPath, 0755);
+            $this->filesystem->symlink($xPath, $pharPath);
         }
 
         return null;
@@ -225,12 +247,17 @@ GI;
     private function installExtension(Package $package, Package $extension, string $toolsDir, SymfonyStyle $io): ?int
     {
         $name = $package->getName(); // Use normalized name
-        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
+        $legacyDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
+        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . '.' . $name;
 
         if (!is_dir($targetDir)) {
-            $io->warning(sprintf('%s is not installed. You can install it with "cotor.phar install %1$s"', $name));
+            if (is_dir($legacyDir)) {
+                $targetDir = $legacyDir;
+            } else {
+                $io->warning(sprintf('%s is not installed. You can install it with "cotor.phar install %1$s"', $name));
 
-            return Command::FAILURE;
+                return Command::FAILURE;
+            }
         }
 
         // Check if extension is installed

@@ -59,11 +59,16 @@ final class ExtendCommand extends AbstractComposerCommand
         }
 
         $name = $package->getName();
-        $targetDir = $toolsDir . '/' . $name;
+        $legacyDir = $toolsDir . '/' . $name;
+        $targetDir = $toolsDir . '/.' . $name;
         if (!is_dir($targetDir)) {
-            $io->error(sprintf('%s is not installed. You can install it with "cotor.phar install %s".', $name, $name));
+            if (is_dir($legacyDir)) {
+                $targetDir = $legacyDir;
+            } else {
+                $io->error(sprintf('%s is not installed. You can install it with "cotor.phar install %s".', $name, $name));
 
-            return Command::INVALID;
+                return Command::INVALID;
+            }
         }
 
         // Get project's composer file
