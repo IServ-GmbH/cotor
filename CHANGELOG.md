@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.2.1 - 2021-10-29
+
+### Fixed
+
+- Use relative paths for phar symlinks.
+
 ## 1.2 - 2021-10-29
 
 ### Changed

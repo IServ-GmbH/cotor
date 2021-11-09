@@ -233,9 +233,12 @@ GI;
             $this->filesystem->remove($pharPath);
         }
 
-        // Create symlink as tools/$name.phar to replace phive transparently
+        // Create local symlink in "tools/" as $name.phar to replace phive transparently
         if (!$this->filesystem->exists($pharPath)) {
-            $this->filesystem->symlink($xPath, $pharPath);
+            $cwd = getcwd();
+            chdir($this->getToolsDir());
+            $this->filesystem->symlink($name, $name . '.phar');
+            chdir($cwd);
         }
 
         return null;
