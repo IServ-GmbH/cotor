@@ -7,6 +7,7 @@ namespace IServ\ComposerToolsInstaller\Command;
 use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
+use IServ\ComposerToolsInstaller\Tools\ToolPath;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,7 +46,6 @@ GI;
             ->setHelp('This command allows you to install composer based tools.')
             ->addArgument('name', InputArgument::OPTIONAL, 'The short name of the tool or its composer name. Leave empty to install tools from your composer.json.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force installation of the tool. Will remove current installation.')
-            ->addOption('no-phive', null, InputOption::VALUE_NONE, 'Do not install with wrapper for phive.')
         ;
     }
 
@@ -60,7 +60,6 @@ GI;
 
         $name = (string)$input->getArgument('name');
         $force = (bool)$input->getOption('force');
-        $noPhive = (bool)$input->getOption('no-phive');
 
         $composer = null;
         $composerPath = getcwd() . '/composer.json';
@@ -120,7 +119,7 @@ GI;
             $useVersion = true;
 
             foreach ($tools as $package) {
-                if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion, $noPhive)) {
+                if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
                     $io->writeln(sprintf('<info>✓</info> %s installed successfully.', $package->getName()));
                 }
             }
@@ -160,7 +159,7 @@ GI;
                 return Command::INVALID;
             }
 
-            if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, $useVersion, $noPhive)) {
+            if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
                 return $exitCode;
             }
 
@@ -179,11 +178,11 @@ GI;
     /**
      * Install given tool
      */
-    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion, bool $noPhive): ?int
+    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion): ?int
     {
         $name = $package->getName(); // Use normalized name
         $legacyDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
-        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . '.' . $name;
+        $targetDir = ToolPath::create($toolsDir, $name);
 
         // Remove legacy dirs on demand
         if (is_dir($legacyDir)) {
@@ -214,7 +213,7 @@ GI;
         }
 
         // Create executable as tools/$name
-        $xPath = sprintf('%s/%s', $toolsDir, $name);
+        $xPath = ToolPath::createExecutable($toolsDir, $name);
         if ($force && $this->filesystem->exists($xPath)) {
             $this->filesystem->remove($xPath);
         }
@@ -224,21 +223,10 @@ GI;
             $this->filesystem->chmod($xPath, 0755);
         }
 
-        if ($noPhive) {
-            return null;
-        }
-
+        // Cleanup legacy phive support
         $pharPath = sprintf('%s/%s.phar', $toolsDir, $name);
-        if ($force && $this->filesystem->exists($pharPath)) {
+        if ($this->filesystem->exists($pharPath)) {
             $this->filesystem->remove($pharPath);
-        }
-
-        // Create local symlink in "tools/" as $name.phar to replace phive transparently
-        if (!$this->filesystem->exists($pharPath)) {
-            $cwd = getcwd();
-            chdir($this->getToolsDir());
-            $this->filesystem->symlink($name, $name . '.phar');
-            chdir($cwd);
         }
 
         return null;
@@ -251,7 +239,7 @@ GI;
     {
         $name = $package->getName(); // Use normalized name
         $legacyDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
-        $targetDir = $toolsDir . DIRECTORY_SEPARATOR . '.' . $name;
+        $targetDir = ToolPath::create($toolsDir, $name);
 
         if (!is_dir($targetDir)) {
             if (is_dir($legacyDir)) {

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Changed
+
+- [BC BREAK] Removed phive replacement support. #44254 
+
+### Fixed
+
+- Use proper path on reading package version for new tool installations. #44253
+ 
 ## 1.2.1 - 2021-10-29
 
 ### Fixed

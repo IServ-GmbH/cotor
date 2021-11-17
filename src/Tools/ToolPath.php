@@ -14,4 +14,9 @@ final class ToolPath
 
         return sprintf('%s/.%s/%s', $toolsDir, $name, $file);
     }
+
+    public static function createExecutable(string $toolsDir, string $name): string
+    {
+        return sprintf('%s/%s', $toolsDir, $name);
+    }
 }
