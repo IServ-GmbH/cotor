@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.3 - 2021-11-17
+
 ### Changed
 
 - [BC BREAK] Removed phive replacement support. #44254 
