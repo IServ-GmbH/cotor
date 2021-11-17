@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IServ\ComposerToolsInstaller\Command;
 
+use IServ\ComposerToolsInstaller\Tools\ToolPath;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,7 +48,7 @@ final class UpdateCommand extends AbstractToolCommand
 
         $name = $package->getName();
         $legacyDir = $toolsDir . '/' . $name;
-        $targetDir = $toolsDir . '/.' . $name;
+        $targetDir = ToolPath::create($toolsDir, $name);
 
         if (!is_dir($targetDir)) {
             if (is_dir($legacyDir)) {

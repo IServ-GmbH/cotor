@@ -7,6 +7,7 @@ namespace IServ\ComposerToolsInstaller\Command;
 use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
+use IServ\ComposerToolsInstaller\Tools\ToolPath;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -60,7 +61,7 @@ final class ExtendCommand extends AbstractComposerCommand
 
         $name = $package->getName();
         $legacyDir = $toolsDir . '/' . $name;
-        $targetDir = $toolsDir . '/.' . $name;
+        $targetDir = ToolPath::create($toolsDir, $name);
         if (!is_dir($targetDir)) {
             if (is_dir($legacyDir)) {
                 $targetDir = $legacyDir;

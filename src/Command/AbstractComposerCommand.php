@@ -7,6 +7,7 @@ namespace IServ\ComposerToolsInstaller\Command;
 use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Package;
 use IServ\ComposerToolsInstaller\Domain\SemVer;
+use IServ\ComposerToolsInstaller\Tools\ToolPath;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -26,7 +27,7 @@ abstract class AbstractComposerCommand extends AbstractToolCommand
     {
         // Get installed version
         $toolName = null === $basePackage ? $package->getName() : $basePackage->getName();
-        $toolComposerLockName = $toolsDir . '/' . $toolName . '/composer.lock';
+        $toolComposerLockName = ToolPath::create($toolsDir, $toolName, 'composer.lock');
         if (!$this->filesystem->exists($toolComposerLockName)) {
             $io->warning(sprintf('Could not find composer.lock of %s!', $toolName));
 
