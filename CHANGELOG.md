@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded box build und tools. #48850
+
 ## 1.3 - 2021-11-17
 
 ### Changed
