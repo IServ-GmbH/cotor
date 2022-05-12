@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added `outdated` command. #47341
+
+### Fixed
+
+- Fixed `update-all` command not finding any tools.
+
 ## 1.4 - 2022-04-12
 
 ### Changed
