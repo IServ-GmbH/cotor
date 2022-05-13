@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.5 - 2022-05-13
+
 ### Added
 
 - Added `outdated` command. #47341
