@@ -19,4 +19,17 @@ final class ToolPath
     {
         return sprintf('%s/%s', $toolsDir, $name);
     }
+
+    /** @return array<int, string> */
+    public static function glob(string $toolsDir): array
+    {
+        $targetDirs = glob($toolsDir . '/.*', GLOB_ONLYDIR);
+
+        return array_filter($targetDirs, static fn (string $dir): bool => !str_ends_with($dir, '/.') && !str_ends_with($dir, '/..'));
+    }
+
+    public static function path2name(string $tooldir): string
+    {
+        return substr(strrchr($tooldir, '/'), 2); // 2 = Remove slash and dot
+    }
 }

@@ -11,15 +11,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-final class UpdateAllCommand extends AbstractToolCommand
+final class OutdatedCommand extends AbstractToolCommand
 {
-    protected static $defaultName = 'update-all';
+    protected static $defaultName = 'outdated';
 
     protected function configure(): void
     {
         $this
-            ->setDescription('Updates all tools')
-            ->setHelp('This command allows you to update all installed tools.')
+            ->setDescription('Check if tools are outdated or not')
+            ->setHelp('This command allows you to check if tools are outdated or not')
         ;
     }
 
@@ -42,10 +42,15 @@ final class UpdateAllCommand extends AbstractToolCommand
 
         foreach ($targetDirs as $targetDir) {
             try {
-                $this->runComposer('update', $targetDir);
-                $io->writeln(sprintf('<info>✓</info> %s updated successfully.', ToolPath::path2name($targetDir)));
+                if ('' === $out = $this->runComposerWithArguments('outdated', $targetDir, '--direct')) {
+                    $io->writeln(sprintf('<info>✓</info> %s is up-to-date.', ToolPath::path2name($targetDir)));
+                } elseif (preg_match('#^1(?:.+?)/(?:.+?)\s(?P<current>.+?)\s.\s(?P<new>.+?)\s#', $out, $matches)) {
+                    $io->writeln(sprintf('<comment>⚠</comment> %s is outdated: %s => %s', ToolPath::path2name($targetDir), $matches['current'], $matches['new']));
+                } else {
+                    $io->writeln(sprintf('<comment>⚠</comment> %s is outdated: %s', ToolPath::path2name($targetDir), trim($out)));
+                }
             } catch (ProcessFailedException) {
-                $io->writeln(sprintf('<error>✗</error> Failed to update %s.', ToolPath::path2name($targetDir)));
+                $io->writeln(sprintf('<error>✗</error> Failed to check if %s is outdated.', ToolPath::path2name($targetDir)));
             }
         }
 

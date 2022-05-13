@@ -15,4 +15,5 @@ $application->add(new Command\InstallCommand($filesystem));
 $application->add(new Command\ExtendCommand($filesystem));
 $application->add(new Command\UpdateCommand());
 $application->add(new Command\UpdateAllCommand());
+$application->add(new Command\OutdatedCommand());
 $application->run();

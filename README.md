@@ -12,6 +12,7 @@ For each tool a standalone folder named by the package without the vendor will b
 * **install $name**: Installs a new tool. `$name` must be a tool's composer or registered shortcut name.
 * **update $name**: Updates an installed tool. `$name` must be a tool's name without vendor or registered shortcut name.
 * **update-all**: Updates all installed tools.
+* **outdated**: Lists all tools and checks if they are up-to-date.
 * **extend $name $extension**: Installs a tool extension. `$name` must be a tool's composer or registered shortcut name. `$extension` must be the composer name of the extension.
 
 ## How to build cotor
