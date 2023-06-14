@@ -9,6 +9,7 @@ use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,6 +28,7 @@ final class ExtendCommand extends AbstractComposerCommand
             ->setHelp('This command allows you to add an extension to a composer based tool.')
             ->addArgument('name', InputArgument::REQUIRED, 'The short name of the tool or its composer name')
             ->addArgument('extension', InputArgument::REQUIRED, 'The composer package name of the extension to install')
+            ->addArgument('version', InputArgument::OPTIONAL, 'The version of the extension to install (default: latest)')
         ;
     }
 
@@ -35,9 +37,27 @@ final class ExtendCommand extends AbstractComposerCommand
         $io = new SymfonyStyle($input, $output);
         $name = (string)$input->getArgument('name');
         $extension = (string)$input->getArgument('extension');
+        try {
+            /** @var mixed $version Makes psalm happy */
+            $version = $input->getArgument('version');
+            if (null !== $version) {
+                $version = (string)$version;
+            }
+        } catch (InvalidArgumentException) {
+            $version = null;
+        }
+
+        if (str_contains($extension, ':')) {
+            [$extension, $version] = explode(':', $extension);
+            $io->warning('Do not add a version to the extension name!');
+            $io->text(sprintf('Try: cotor extend %s %s %s', $name, $extension, $version));
+
+
+            return self::FAILURE;
+        }
 
         try {
-            $extensionPackage = Package::createFromComposerName($extension);
+            $extensionPackage = Package::createFromComposerName($extension, $version);
         } catch (\InvalidArgumentException $e) {
             $io->error($e->getMessage());
 
@@ -84,8 +104,13 @@ final class ExtendCommand extends AbstractComposerCommand
         }
 
         // Install extension to tool
+        $extensionParam = $extension;
+        if ($version) {
+            $extensionParam = $extension . ':' . $version;
+        }
+
         try {
-            $this->runComposerWithArguments('require', $targetDir, $extension);
+            $this->runComposerWithArguments('require', $targetDir, $extensionParam);
         } catch (ProcessFailedException $e) {
             /** @var Process $process */
             $process = $e->getProcess(); // Make psalm happy :/
@@ -97,6 +122,9 @@ final class ExtendCommand extends AbstractComposerCommand
         // Extract installed extension version and store everything in the project's composer file
         if (null !== $composer) {
             $extensionPackage = $this->getInstalledPackageVersion($toolsDir, $extensionPackage, $io, $package);
+            if (null !== $version) {
+                $extensionPackage = $extensionPackage->withVersion($version);
+            }
             $this->updateComposerWithExtension($composer, $composerPath, $package, $extensionPackage, $io);
         }
 

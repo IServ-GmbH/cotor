@@ -24,7 +24,7 @@ final class Package
         $this->version = $version;
     }
 
-    public static function createFromComposerName(string $vendorName, string $version = self::DEFAULT_VERSION): self
+    public static function createFromComposerName(string $vendorName, ?string $version = self::DEFAULT_VERSION): self
     {
         if (substr_count($vendorName, '/') !== 1) {
             throw new \InvalidArgumentException(sprintf('%s is not valid composer package name!', $vendorName));
@@ -32,7 +32,7 @@ final class Package
 
         [$vendor, $name] = explode('/', $vendorName, 2);
 
-        return new self($vendor, $name, $version);
+        return new self($vendor, $name, $version ?? self::DEFAULT_VERSION);
     }
 
     public function withVersion(string $version): self
