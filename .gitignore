@@ -4,3 +4,7 @@
 /composer.lock
 /cotor.phar
 /.php-cs-fixer.cache
+/Makefile.iservmake
+/locale
+/system-locale
+!/locale/templates/*_misc.pot
