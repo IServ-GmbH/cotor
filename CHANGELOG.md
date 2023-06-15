@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added `version` argument to `extend` command. #63975
+
 ## 1.5 - 2022-05-13
 
 ### Added
