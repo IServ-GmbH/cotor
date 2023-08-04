@@ -1,0 +1,23 @@
+Source: cotor
+Section: misc
+Priority: optional
+Maintainer: IServ <info@iserv.eu>
+Build-Depends: debhelper-compat (= 13),
+  dh-sequence-iserv,
+Standards-Version: 4.4.1
+Homepage: https://github.com/IServ-GmbH/cotor
+Vcs-Browser: https://github.com/IServ-GmbH/cotor
+Vcs-Git: https://github.com/IServ-GmbH/cotor.git
+Rules-Requires-Root: no
+
+Package: cotor
+Architecture: all
+Depends: ${misc:Depends},
+  ${perl:Depends},
+  php-cli (>= 0),
+Description: Composer Tools Installer aka Cotor
+ You can install any composer based dev tool with cotor. It will install each
+ package in a `tools` folder in your current working directory.
+ For each tool a standalone folder named by the package without the vendor
+ will be created.
+Tag: suite::iserv

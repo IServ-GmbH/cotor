@@ -1,4 +1,122 @@
 include:
   - project: 'iserv-internal/git/ci'
-    file: '/iserv-library.yml'
+    file: '/iserv-app.yml'
 
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      variables:
+        CI_ISERV_PACKAGE_UPLOAD: "false"
+    - !reference [.workflow, rules]
+
+variables:
+  CI_ISERV_TRANSLATIONS_ENABLE: "false"
+  CI_ISERV_WEB_ROOT: './'
+
+stages:
+  - prepare
+  - extract
+  - update
+  - fetch
+  - prebuild
+  - build
+  - compile
+  - check
+  - package
+  - test
+  - lint
+  - upload
+  - release
+  - distribute
+  - distribute-ci
+
+composer:
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+      when: always
+    - !reference [.composer, rules]
+
+composer dev:
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+      when: always
+    - !reference [.composer, rules]
+
+phpstan:
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+      when: always
+    - !reference [.phpstan, rules]
+
+psalm:
+  rules:
+    - if: ($CI_COMMIT_BRANCH || $CI_MERGE_REQUEST_ID || ($CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//))
+      when: always
+
+php-cs-fixer:
+  rules:
+    - if: ($CI_COMMIT_BRANCH || $CI_MERGE_REQUEST_ID || ($CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//))
+      when: always
+
+Phar:
+  stage: build
+  image: !reference [.PHP Image, image]
+  before_script:
+    - env
+    - git utimes
+    - cd "${CI_ISERV_WEB_ROOT:-.}"
+  script:
+    - iservmake phar
+  needs:
+    - composer
+  artifacts:
+    paths:
+      - cotor
+      - cotor.phar
+  rules:
+    - if: $RENOVE_ENABLE == "true"
+      when: never
+    - if: ($CI_COMMIT_BRANCH || $CI_MERGE_REQUEST_ID || ($CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//))
+      when: always
+  tags:
+   - docker
+
+Phar Upload:
+  stage: upload
+  image: curlimages/curl:latest
+  before_script:
+    - env
+    - git utimes
+    - cd "${CI_ISERV_WEB_ROOT:-.}"
+  script:
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file cotor.phar "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}"'
+  needs:
+    - Phar
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+  tags:
+   - docker
+
+Release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+  script:
+    - echo "Running release job"
+  needs:
+    - Upload
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: '$CI_COMMIT_TAG_MESSAGE'
+    assets:
+      links:
+        - name: "cotor.phar"
+          url: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}"
+  tags:
+   - docker
+
+Package:
+  needs:
+    - !reference [.Package, needs]
+    - Phar
