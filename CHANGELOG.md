@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added Debian package. #65597
+
 ## 1.6 - 2023-08-04
 
 ### Added
