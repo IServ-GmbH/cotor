@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed dotenv format.
+
 ## 1.7.4 - 2023-08-24
 
 ### Fixed
