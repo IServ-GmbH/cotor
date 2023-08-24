@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.7.1 - 2023-08-24
+
+## Fixed
+
+- Fixed CI configuration.
+
 ## 1.7 - 2023-08-24
 
 ### Added
