@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed quoting in release job again.
+
 ## 1.7.8 - 2023-08-24
 
 ### Fixed
