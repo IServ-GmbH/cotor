@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.7.4 - 2023-08-24
+
 ### Fixed
 
 - Fixed newlines in release description.
