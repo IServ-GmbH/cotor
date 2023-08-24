@@ -104,7 +104,7 @@ Prepare Release:
     - env
     - cd "${CI_ISERV_WEB_ROOT:-.}"
   script:
-    - echo "RELEASE_DESCRIPTION=$(echo "$CI_COMMIT_TAG_MESSAGE" | sed "/-----BEGIN PGP SIGNATURE-----/,/-----END PGP SIGNATURE-----/d")" | sed \':a;N;\$\!ba;s/\n/<br>/g\' >> variables.env
+    - echo "RELEASE_DESCRIPTION=$(echo "$CI_COMMIT_TAG_MESSAGE" | sed "/-----BEGIN PGP SIGNATURE-----/,/-----END PGP SIGNATURE-----/d")" | sed ':a;N;\$\!ba;s/\n/<br>/g' >> variables.env
   needs: []
   artifacts:
     reports:
