@@ -73,6 +73,7 @@ Phar:
     paths:
       - cotor
       - cotor.phar
+    expire_in: 1 week
   rules:
     - if: $RENOVE_ENABLE == "true"
       when: never
@@ -88,9 +89,26 @@ Phar Upload:
     - env
     - cd "${CI_ISERV_WEB_ROOT:-.}"
   script:
-    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file cotor.phar "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}"'
+    - 'curl -f --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file cotor.phar "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/cotor.phar"'
   needs:
     - Phar
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+  tags:
+   - docker
+
+Prepare Release:
+  stage: build
+  image: $CI_REGISTRY/iserv/internal-dev/slim:master
+  before_script:
+    - env
+    - cd "${CI_ISERV_WEB_ROOT:-.}"
+  script:
+    - 'echo "RELEASE_DESCRIPTION=\"$(echo "$CI_COMMIT_TAG_MESSAGE" | sed "/-----BEGIN PGP SIGNATURE-----/,/-----END PGP SIGNATURE-----/d")\"" >> variables.env'
+  artifacts:
+    reports:
+      dotenv: variables.env
+    expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
   tags:
@@ -99,19 +117,24 @@ Phar Upload:
 Release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  rules:
-    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
+  before_script:
+    - env
+    - cd "${CI_ISERV_WEB_ROOT:-.}"
   script:
     - echo "Running release job"
   needs:
     - Phar Upload
+    - job: Prepare Release
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^iserv\//
   release:
     tag_name: '$CI_COMMIT_TAG'
-    description: '$CI_COMMIT_TAG_MESSAGE'
+    description: '$RELEASE_DESCRIPTION'
     assets:
       links:
         - name: "cotor.phar"
-          url: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}"
+          url: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/cotor.phar"
   tags:
    - docker
 

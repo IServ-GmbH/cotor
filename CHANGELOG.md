@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed uploading PHAR and release description.
+
 ## 1.7.2 - 2023-08-24
 
 ### Fixed
