@@ -1,3 +1,10 @@
+cotor (1.7.9) experimental; urgency=medium
+
+  * New release 1.7.9.
+  * Fixed quoting in release job again.
+
+ -- IServ <info@iserv.eu>  Thu, 24 Aug 2023 16:36:43 +0200
+
 cotor (1.7.8) experimental; urgency=medium
 
   * New release 1.7.8.
