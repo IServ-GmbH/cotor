@@ -1,3 +1,10 @@
+cotor (1.7.2) experimental; urgency=medium
+
+  * New release 1.7.2.
+  * Fixed bad commands in upload job.
+
+ -- IServ <info@iserv.eu>  Thu, 24 Aug 2023 15:40:45 +0200
+
 cotor (1.7.1) experimental; urgency=medium
 
   * New release 1.7.1.
