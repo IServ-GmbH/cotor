@@ -1,3 +1,10 @@
+cotor (1.7.5) experimental; urgency=medium
+
+  * New release 1.7.5.
+  * Fixed dotenv format.
+
+ -- IServ <info@iserv.eu>  Thu, 24 Aug 2023 16:23:26 +0200
+
 cotor (1.7.4) experimental; urgency=medium
 
   * New release 1.7.4.
