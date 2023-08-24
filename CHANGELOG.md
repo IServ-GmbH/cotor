@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
-## Fixed
+### Fixed
 
 - Fixed bad commands in upload job.
 
 ## 1.7.1 - 2023-08-24
 
-## Fixed
+### Fixed
 
 - Fixed CI configuration.
 
