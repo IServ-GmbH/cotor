@@ -1,3 +1,10 @@
+cotor (1.7.3) experimental; urgency=medium
+
+  * New release 1.7.3.
+  * Fixed uploading PHAR and release description.
+
+ -- IServ <info@iserv.eu>  Thu, 24 Aug 2023 16:09:36 +0200
+
 cotor (1.7.2) experimental; urgency=medium
 
   * New release 1.7.2.
