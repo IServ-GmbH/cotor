@@ -33,6 +33,11 @@ BASH;
 
     private const GITIGNORE = <<<GI
 /vendor/
+
+GI;
+
+    private const GITIGNORE_NO_LOCK = <<<GI
+/vendor/
 /composer.lock
 
 GI;
@@ -46,6 +51,7 @@ GI;
             ->setHelp('This command allows you to install composer based tools.')
             ->addArgument('name', InputArgument::OPTIONAL, 'The short name of the tool or its composer name. Leave empty to install tools from your composer.json.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force installation of the tool. Will remove current installation.')
+            ->addOption('no-lock', null, InputOption::VALUE_NONE, 'Install without Composer\'s lock file. The tool will always use the latest bugfix release.')
         ;
     }
 
@@ -60,6 +66,7 @@ GI;
 
         $name = (string)$input->getArgument('name');
         $force = (bool)$input->getOption('force');
+        $noLock = (bool)$input->getOption('no-lock');
 
         $composer = null;
         $composerPath = getcwd() . '/composer.json';
@@ -89,7 +96,6 @@ GI;
         }
 
         // Check single package vs extra mode
-        $useVersion = false;
         $tools = [];
         if ('' === $name) {
             if (null === $composer) {
@@ -116,10 +122,9 @@ GI;
 
                 $tools[] = Package::createFromComposerName($name, $version);
             }
-            $useVersion = true;
 
             foreach ($tools as $package) {
-                if (null === $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
+                if (null === $this->installTool($package, $toolsDir, $io, $force, true, $noLock)) {
                     $io->writeln(sprintf('<info>✓</info> %s installed successfully.', $package->getName()));
                 }
             }
@@ -150,27 +155,30 @@ GI;
                     }
                 }
             }
-        } else {
-            try {
-                $package = $this->getPackage($name);
-            } catch (\InvalidArgumentException $e) {
-                $io->error(sprintf('Unknown tool %s!', $name));
 
-                return Command::INVALID;
-            }
-
-            if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, $useVersion)) {
-                return $exitCode;
-            }
-
-            $package = $this->getInstalledPackageVersion($toolsDir, $package, $io);
-
-            if (null !== $composer) {
-                $this->updateComposer($composer, $composerPath, $package, $io, $force);
-            }
-
-            $io->success(sprintf('%s installed successfully.', $package->getName()));
+            return Command::SUCCESS;
         }
+
+        // Single Package Mode
+        try {
+            $package = $this->getPackage($name);
+        } catch (\InvalidArgumentException) {
+            $io->error(sprintf('Unknown tool %s!', $name));
+
+            return Command::INVALID;
+        }
+
+        if (null !== $exitCode = $this->installTool($package, $toolsDir, $io, $force, false, $noLock)) {
+            return $exitCode;
+        }
+
+        $package = $this->getInstalledPackageVersion($toolsDir, $package, $io);
+
+        if (null !== $composer) {
+            $this->updateComposer($composer, $composerPath, $package, $io, $force);
+        }
+
+        $io->success(sprintf('%s installed successfully.', $package->getName()));
 
         return Command::SUCCESS;
     }
@@ -178,7 +186,7 @@ GI;
     /**
      * Install given tool
      */
-    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion): ?int
+    private function installTool(Package $package, string $toolsDir, SymfonyStyle $io, bool $force, bool $useVersion, bool $noLock): ?int
     {
         $name = $package->getName(); // Use normalized name
         $legacyDir = $toolsDir . DIRECTORY_SEPARATOR . $name;
@@ -200,7 +208,11 @@ GI;
         }
 
         $this->filesystem->mkdir($targetDir);
-        $this->filesystem->dumpFile($targetDir . DIRECTORY_SEPARATOR . '.gitignore', self::GITIGNORE);
+        if ($noLock) {
+            $this->filesystem->dumpFile($targetDir . DIRECTORY_SEPARATOR . '.gitignore', self::GITIGNORE_NO_LOCK);
+        } else {
+            $this->filesystem->dumpFile($targetDir . DIRECTORY_SEPARATOR . '.gitignore', self::GITIGNORE);
+        }
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
@@ -221,12 +233,6 @@ GI;
         if (!$this->filesystem->exists($xPath)) {
             $this->filesystem->dumpFile($xPath, str_replace('%NAME%', $name, self::WRAPPER));
             $this->filesystem->chmod($xPath, 0755);
-        }
-
-        // Cleanup legacy phive support
-        $pharPath = sprintf('%s/%s.phar', $toolsDir, $name);
-        if ($this->filesystem->exists($pharPath)) {
-            $this->filesystem->remove($pharPath);
         }
 
         return null;
