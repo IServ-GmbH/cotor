@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Changed
+
+- Cotor now adds the `composer.lock` to the git repo. Use `cotor.phar install --no-lock` for the old behaviour. #65950
+
+### Removed
+
+- Removed legacy self cleanup.
+
 ## 1.7.9 - 2023-08-24
 
 ### Fixed

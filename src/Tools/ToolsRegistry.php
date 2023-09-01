@@ -16,6 +16,7 @@ final class ToolsRegistry
             'phpunit' => 'phpunit/phpunit',
             'psalm' => 'vimeo/psalm',
             'pslam' => 'vimeo/psalm',
+            'rector' => 'rector/rector',
         ];
     }
 }
