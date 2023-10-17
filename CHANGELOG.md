@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file, in reverse 
 ### Changed
 
 - Cotor now adds the `composer.lock` to the git repo. Use `cotor.phar install --no-lock` for the old behaviour. #65950
+- Increased minimum version of symfony/console to get rid of deprecation warnings. #65695
 
 ### Removed
 
