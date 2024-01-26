@@ -10,3 +10,4 @@
 /system-locale
 !/locale/templates/*_misc.pot
 /variables.env
+/public/assets
