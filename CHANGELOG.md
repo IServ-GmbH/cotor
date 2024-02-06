@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## [Unreleased]
+## 1.8.1 - 2024-02-06
+
+### Changed
+
+- Updated dependencies. #69054
 
 ## 1.8 - 2023-10-23
 
