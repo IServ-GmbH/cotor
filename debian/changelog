@@ -1,3 +1,10 @@
+cotor (1.8.3) testing; urgency=medium
+
+  * New release 1.8.3.
+  * Updated dependencies. #70336
+
+ -- IServ <info@iserv.eu>  Tue, 09 Apr 2024 12:51:31 +0200
+
 cotor (1.8.2) testing; urgency=medium
 
   * New release 1.8.2.
