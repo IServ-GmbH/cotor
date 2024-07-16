@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.8.6 - 2024-07-16
+
+- Updated dependencies. #71970
+
 ## 1.8.5 - 2024-06-04
 
 - Updated dependencies. #71318
