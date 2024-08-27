@@ -62,10 +62,8 @@ final class UpdateCommand extends AbstractToolCommand
 
         try {
             $this->runComposer('update', $targetDir);
-        } catch (ProcessFailedException $e) {
-            /** @var Process $process */
-            $process = $e->getProcess(); // Make psalm happy :/
-            $io->error('Failed to run composer: ' . $process->getErrorOutput());
+        } catch (ProcessFailedException $processFailedException) {
+            $io->error('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
 
             return Command::FAILURE;
         }
