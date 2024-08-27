@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added `run` command. #70868
+
 ### Fixes
 
 - Updated Symfony dependencies to v7. #73201
