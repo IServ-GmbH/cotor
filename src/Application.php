@@ -22,7 +22,7 @@ final class Application extends \Symfony\Component\Console\Application
 ASCII;
 
     /** {@inheritDoc} */
-    public function getHelp()
+    public function getHelp(): string
     {
         $help = self::LOGO;
         $help .= parent::getHelp();
