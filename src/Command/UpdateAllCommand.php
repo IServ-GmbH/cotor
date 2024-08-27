@@ -13,6 +13,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 final class UpdateAllCommand extends AbstractToolCommand
 {
+    /** @var string */
     protected static $defaultName = 'update-all';
 
     protected function configure(): void

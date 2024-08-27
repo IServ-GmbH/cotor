@@ -19,6 +19,7 @@ use Symfony\Component\Process\Process;
 
 final class ExtendCommand extends AbstractComposerCommand
 {
+    /** @var string */
     protected static $defaultName = 'extend';
 
     protected function configure(): void

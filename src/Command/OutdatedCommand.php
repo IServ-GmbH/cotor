@@ -13,6 +13,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 final class OutdatedCommand extends AbstractToolCommand
 {
+    /** @var string */
     protected static $defaultName = 'outdated';
 
     protected function configure(): void

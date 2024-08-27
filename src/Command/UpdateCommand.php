@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
 
 final class UpdateCommand extends AbstractToolCommand
 {
+    /** @var string */
     protected static $defaultName = 'update';
 
     protected function configure(): void
@@ -40,7 +41,7 @@ final class UpdateCommand extends AbstractToolCommand
 
         try {
             $package = $this->getPackage($name);
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             $io->error(sprintf('Unknown tool %s!', $name));
 
             return Command::INVALID;

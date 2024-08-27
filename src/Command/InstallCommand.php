@@ -20,16 +20,16 @@ use Symfony\Component\Process\Process;
 
 final class InstallCommand extends AbstractComposerCommand
 {
-    private const WRAPPER = <<<BASH
+    private const WRAPPER = <<<BASH_WRAP
 #!/bin/bash
 # This file was created automatically by cotor as a tool wrapper.
 
-DIR=$(realpath "$(dirname "\${BASH_SOURCE[0]}")")
+DIR=\$(realpath "\$(dirname "\${BASH_SOURCE[0]}")")
 
 composer install --working-dir=\$DIR/.%NAME% --quiet
-exec \$DIR/.%NAME%/vendor/bin/%NAME% "$@"
+exec \$DIR/.%NAME%/vendor/bin/%NAME% "\$@"
 
-BASH;
+BASH_WRAP;
 
     private const GITIGNORE = <<<GI
 /vendor/
@@ -42,6 +42,7 @@ GI;
 
 GI;
 
+    /** @var string */
     protected static $defaultName = 'install';
 
     protected function configure(): void
