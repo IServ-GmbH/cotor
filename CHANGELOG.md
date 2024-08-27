@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added `run` command. #70868
+
 ## 1.8.6 - 2024-07-16
 
 - Updated dependencies. #71970
