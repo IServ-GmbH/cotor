@@ -8,6 +8,7 @@ use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'install', description: 'Installs tools')]
 final class InstallCommand extends AbstractComposerCommand
 {
     private const WRAPPER = <<<BASH_WRAP
@@ -42,13 +44,9 @@ GI;
 
 GI;
 
-    /** @var string */
-    protected static $defaultName = 'install';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Installs tools')
             ->setHelp('This command allows you to install composer based tools.')
             ->addArgument('name', InputArgument::OPTIONAL, 'The short name of the tool or its composer name. Leave empty to install tools from your composer.json.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force installation of the tool. Will remove current installation.')

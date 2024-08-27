@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace IServ\ComposerToolsInstaller\Command;
 
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+#[AsCommand(name: 'update-all', description: 'Updates all tools')]
 final class UpdateAllCommand extends AbstractToolCommand
 {
-    /** @var string */
-    protected static $defaultName = 'update-all';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Updates all tools')
             ->setHelp('This command allows you to update all installed tools.')
         ;
     }

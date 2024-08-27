@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IServ\ComposerToolsInstaller\Command;
 
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,15 +14,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'update', description: 'Updates a tool')]
 final class UpdateCommand extends AbstractToolCommand
 {
-    /** @var string */
-    protected static $defaultName = 'update';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Updates a tool')
             ->setHelp('This command allows you to update a composer based tool.')
             ->addArgument('name', InputArgument::REQUIRED, 'The short name of the tool or its composer name')
         ;
