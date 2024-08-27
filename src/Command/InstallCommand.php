@@ -216,10 +216,8 @@ GI;
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
-        } catch (ProcessFailedException $e) {
-            /** @var Process $process */
-            $process = $e->getProcess(); // Make psalm happy :/
-            $io->error('Failed to run composer: ' . $process->getErrorOutput());
+        } catch (ProcessFailedException $processFailedException) {
+            $io->error('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
 
             return Command::FAILURE;
         }
@@ -267,10 +265,8 @@ GI;
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $extension, true);
-        } catch (ProcessFailedException $e) {
-            /** @var Process $process */
-            $process = $e->getProcess(); // Make psalm happy :/
-            $io->warning('Failed to run composer: ' . $process->getErrorOutput());
+        } catch (ProcessFailedException $processFailedException) {
+            $io->warning('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
         }
 
         return null;
