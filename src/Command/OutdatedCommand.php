@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace IServ\ComposerToolsInstaller\Command;
 
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+#[AsCommand(name: 'outdated', description: 'Check if tools are outdated or not')]
 final class OutdatedCommand extends AbstractToolCommand
 {
-    protected static $defaultName = 'outdated';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Check if tools are outdated or not')
             ->setHelp('This command allows you to check if tools are outdated or not')
         ;
     }

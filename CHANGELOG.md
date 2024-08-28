@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Added `run` command. #70868
 
+### Fixes
+
+- Updated Symfony dependencies to v7. #73201
+- Updated Symfony dependencies to v6. #73215
+
 ## 1.8.6 - 2024-07-16
 
 - Updated dependencies. #71970

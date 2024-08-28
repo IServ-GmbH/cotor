@@ -8,6 +8,7 @@ use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,18 +19,19 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'install', description: 'Installs tools')]
 final class InstallCommand extends AbstractComposerCommand
 {
-    private const WRAPPER = <<<BASH
+    private const WRAPPER = <<<BASH_WRAP
 #!/bin/bash
 # This file was created automatically by cotor as a tool wrapper.
 
-DIR=$(realpath "$(dirname "\${BASH_SOURCE[0]}")")
+DIR=\$(realpath "\$(dirname "\${BASH_SOURCE[0]}")")
 
 composer install --working-dir=\$DIR/.%NAME% --quiet
-exec \$DIR/.%NAME%/vendor/bin/%NAME% "$@"
+exec \$DIR/.%NAME%/vendor/bin/%NAME% "\$@"
 
-BASH;
+BASH_WRAP;
 
     private const GITIGNORE = <<<GI
 /vendor/
@@ -42,12 +44,9 @@ GI;
 
 GI;
 
-    protected static $defaultName = 'install';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Installs tools')
             ->setHelp('This command allows you to install composer based tools.')
             ->addArgument('name', InputArgument::OPTIONAL, 'The short name of the tool or its composer name. Leave empty to install tools from your composer.json.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force installation of the tool. Will remove current installation.')
@@ -216,10 +215,8 @@ GI;
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
-        } catch (ProcessFailedException $e) {
-            /** @var Process $process */
-            $process = $e->getProcess(); // Make psalm happy :/
-            $io->error('Failed to run composer: ' . $process->getErrorOutput());
+        } catch (ProcessFailedException $processFailedException) {
+            $io->error('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
 
             return Command::FAILURE;
         }
@@ -267,10 +264,8 @@ GI;
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $extension, true);
-        } catch (ProcessFailedException $e) {
-            /** @var Process $process */
-            $process = $e->getProcess(); // Make psalm happy :/
-            $io->warning('Failed to run composer: ' . $process->getErrorOutput());
+        } catch (ProcessFailedException $processFailedException) {
+            $io->warning('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
         }
 
         return null;
