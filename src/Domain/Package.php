@@ -8,20 +8,11 @@ final class Package
 {
     public const DEFAULT_VERSION = '*';
 
-    /** @var string */
-    private $vendor;
-
-    /** @var string */
-    private $name;
-
-    /** @var string */
-    private $version;
-
-    public function __construct(string $vendor, string $name, string $version = self::DEFAULT_VERSION)
-    {
-        $this->vendor = $vendor;
-        $this->name = $name;
-        $this->version = $version;
+    public function __construct(
+        private string $vendor,
+        private string $name,
+        private string $version = self::DEFAULT_VERSION
+    ) {
     }
 
     public static function createFromComposerName(string $vendorName, ?string $version = self::DEFAULT_VERSION): self

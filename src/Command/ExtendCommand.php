@@ -8,6 +8,7 @@ use IServ\ComposerToolsInstaller\Domain\Composer;
 use IServ\ComposerToolsInstaller\Domain\Cotor;
 use IServ\ComposerToolsInstaller\Domain\Package;
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,14 +18,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'extend', description: 'Installs a tool extension')]
 final class ExtendCommand extends AbstractComposerCommand
 {
-    protected static $defaultName = 'extend';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Installs a tool extension')
             ->setHelp('This command allows you to add an extension to a composer based tool.')
             ->addArgument('name', InputArgument::REQUIRED, 'The short name of the tool or its composer name')
             ->addArgument('extension', InputArgument::REQUIRED, 'The composer package name of the extension to install')
