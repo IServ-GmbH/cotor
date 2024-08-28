@@ -21,8 +21,9 @@ final class RunAllCommand extends AbstractToolCommand
         $this
             ->setHelp('This command allows you to run composer command on all installed tools.')
             ->addArgument('cmd', InputArgument::REQUIRED, 'Composer command to execute.')
-            ->addUsage('install')
-            ->addUsage('install --dry-run')
+            ->addUsage('validate')
+            ->addUsage('check-platform-reqs')
+            ->addUsage('update --lock')
         ;
 
         // Disable validation for dynamic option parameters.
@@ -57,10 +58,23 @@ final class RunAllCommand extends AbstractToolCommand
             $command = "composer " . $cmd;
 
             try {
-                $this->runComposerWithArguments($cmd, $targetDir, $options);
+                if ('' !== $options) {
+                    $this->runComposerWithArguments($cmd, $targetDir, $options);
+                } else {
+                    $this->runComposer($cmd, $targetDir);
+                }
                 $io->writeln(sprintf('<info>✓</info> "%s%s" on %s runs successfully.', $command, '' !== $options ? ' ' . $options : $options, ToolPath::path2name($targetDir)));
-            } catch (ProcessFailedException) {
-                $io->writeln(sprintf('<error>✗</error> Failed to run "%s%s" on %s.', $command, '' !== $options ? ' ' . $options : $options, ToolPath::path2name($targetDir)));
+            } catch (ProcessFailedException $processFailedException) {
+                $process = $processFailedException->getProcess();
+                $io->writeln(
+                    sprintf(
+                        '<error>✗</error> Failed to run "%s%s" on %s (%s).',
+                        $command,
+                        '' !== $options ? ' ' . $options : $options,
+                        ToolPath::path2name($targetDir),
+                        $process->getErrorOutput()
+                    )
+                );
             }
         }
 
