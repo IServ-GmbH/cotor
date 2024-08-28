@@ -5,26 +5,28 @@ declare(strict_types=1);
 namespace IServ\ComposerToolsInstaller\Command;
 
 use IServ\ComposerToolsInstaller\Tools\ToolPath;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+#[AsCommand(name: 'run-all', description: 'Run composer command on all tools')]
 final class RunAllCommand extends AbstractToolCommand
 {
-    protected static $defaultName = 'run-all';
-
     protected function configure(): void
     {
         $this
-            ->setDescription('Run composer command on all tools')
             ->setHelp('This command allows you to run composer command on all installed tools.')
-            ->addArgument('arguments', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Arguments (separate multiple arguments with a space).')
+            ->addArgument('cmd', InputArgument::REQUIRED, 'Composer command to execute.')
             ->addUsage('install')
+            ->addUsage('install --dry-run')
         ;
+
+        // Disable validation for dynamic option parameters.
+        $this->ignoreValidationErrors();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -44,17 +46,21 @@ final class RunAllCommand extends AbstractToolCommand
             $io->warning('Could not find any tools! Did you miss to run `install`?');
         }
 
+        $argv = $_SERVER['argv'] ?? [];
+        $customOptions = array_filter($argv, static fn (string $value): bool => str_starts_with($value, '--'));
+
         foreach ($targetDirs as $targetDir) {
-            /** @var list<string> $arguments */
-            $arguments = $input->getArgument('arguments');
-            $arguments = implode(' ', $arguments);
-            $command = "composer " . $arguments;
+            /** @var string $cmd */
+            $cmd = $input->getArgument('cmd');
+
+            $options = implode(', ', $customOptions);
+            $command = "composer " . $cmd;
 
             try {
-                $this->runComposerWithArguments($arguments, $targetDir);
-                $io->writeln(sprintf('<info>✓</info> "%s" on %s runs successfully.', $command, ToolPath::path2name($targetDir)));
-            } catch (ProcessFailedException $processFailedException) {
-                $io->writeln(sprintf('<error>✗</error> Failed to run "%s" on %s.', $command, ToolPath::path2name($targetDir)));
+                $this->runComposerWithArguments($cmd, $targetDir, $options);
+                $io->writeln(sprintf('<info>✓</info> "%s%s" on %s runs successfully.', $command, '' !== $options ? ' ' . $options : $options, ToolPath::path2name($targetDir)));
+            } catch (ProcessFailedException) {
+                $io->writeln(sprintf('<error>✗</error> Failed to run "%s%s" on %s.', $command, '' !== $options ? ' ' . $options : $options, ToolPath::path2name($targetDir)));
             }
         }
 
