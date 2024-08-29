@@ -6,12 +6,15 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Added `run` command. #70868
+- Added `run-all` command. #70868
+
+## 1.9 - 2024-08-29
 
 ### Fixes
 
 - Updated Symfony dependencies to v7. #73201
 - Updated Symfony dependencies to v6. #73215
+- Updated cotor tools. #74121
 
 ## 1.8.6 - 2024-07-16
 
