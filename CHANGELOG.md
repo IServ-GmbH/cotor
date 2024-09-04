@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.9.1 - 2024-09-04
+
+- Rebuilt to fix broken release.
+
 ## 1.9 - 2024-08-29
 
 ### Fixes
