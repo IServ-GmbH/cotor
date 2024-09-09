@@ -4,8 +4,6 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
-## 1.9.2 - 2024-09-09
-
 - Fixed build that broke executing cotor. #74663
 
 ## 1.9 - 2024-08-29
