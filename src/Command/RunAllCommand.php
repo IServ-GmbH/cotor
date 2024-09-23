@@ -68,7 +68,7 @@ final class RunAllCommand extends AbstractToolCommand
                 $process = $processFailedException->getProcess();
                 $io->writeln(
                     sprintf(
-                        '<error>✗</error> Failed to run "%s%s" on %s (%s).',
+                        '<error>✗</error> Failed to run "%s%s" on %s: %s',
                         $command,
                         '' !== $options ? ' ' . $options : $options,
                         ToolPath::path2name($targetDir),
