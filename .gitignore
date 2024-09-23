@@ -1,7 +1,6 @@
 /vendor/
 /reports/
 /coverage/
-/composer.lock
 /cotor
 /cotor.phar
 /.php-cs-fixer.cache

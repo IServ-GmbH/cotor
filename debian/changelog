@@ -1,3 +1,17 @@
+cotor (1.9.2) unstable; urgency=medium
+
+  * New release 1.9.2.
+  * Fixed build that broke executing cotor. #74663
+
+ -- IServ <info@iserv.eu>  Tue, 10 Sep 2024 12:08:04 +0200
+
+cotor (1.9.1) unstable; urgency=medium
+
+  * New release 1.9.1.
+  * Rebuilt to fix broken release.
+
+ -- IServ <info@iserv.eu>  Wed, 04 Sep 2024 13:34:58 +0200
+
 cotor (1.9) unstable; urgency=medium
 
   * New release 1.9.
