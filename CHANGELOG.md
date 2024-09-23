@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added `run-all` command. #70868
+
 ## 1.9.2 - 2024-09-10
 
 - Fixed build that broke executing cotor. #74663
