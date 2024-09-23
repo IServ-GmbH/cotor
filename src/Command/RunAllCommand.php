@@ -19,7 +19,7 @@ final class RunAllCommand extends AbstractToolCommand
     protected function configure(): void
     {
         $this
-            ->setHelp('This command allows you to run composer command on all installed tools.')
+            ->setHelp('This command allows you to run any composer command on all installed tools.')
             ->addArgument('cmd', InputArgument::REQUIRED, 'Composer command to execute.')
             ->addUsage('validate')
             ->addUsage('check-platform-reqs')
