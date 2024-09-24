@@ -63,7 +63,7 @@ final class RunAllCommand extends AbstractToolCommand
                 } else {
                     $this->runComposer($cmd, $targetDir);
                 }
-                $io->writeln(sprintf('<info>✓</info> "%s%s" on %s runs successfully.', $command, '' !== $options ? ' ' . $options : $options, ToolPath::path2name($targetDir)));
+                $io->writeln(sprintf('<info>✓</info> "%s%s" on %s ran successfully.', $command, '' !== $options ? ' ' . $options : $options, ToolPath::path2name($targetDir)));
             } catch (ProcessFailedException $processFailedException) {
                 $process = $processFailedException->getProcess();
                 $io->writeln(
