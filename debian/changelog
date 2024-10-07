@@ -1,3 +1,10 @@
+cotor (1.10) unstable; urgency=medium
+
+  * New release 1.10.
+  * Added `run-all` command. #70868
+
+ -- IServ <info@iserv.eu>  Mon, 07 Oct 2024 12:30:58 +0200
+
 cotor (1.9.2) unstable; urgency=medium
 
   * New release 1.9.2.

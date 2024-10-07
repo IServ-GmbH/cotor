@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10 - 2024-10-07
+
 ### Added
 
 - Added `run-all` command. #70868
