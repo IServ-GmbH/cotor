@@ -1,3 +1,11 @@
+cotor (1.10.1) unstable; urgency=medium
+
+  * New release 1.10.1.
+  * Update composer dependencies to v7.1.5. #75354
+  * Update dependency phpstan/phpstan to v1.12.5. #75360
+
+ -- IServ <info@iserv.eu>  Tue, 08 Oct 2024 16:34:17 +0200
+
 cotor (1.10) unstable; urgency=medium
 
   * New release 1.10.
