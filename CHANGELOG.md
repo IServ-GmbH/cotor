@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.2 - 2024-11-05
+
+- Update composer dependencies to v7.1.6. #76150
+- Update dependency phpstan/phpstan to v1.12.7. #76165
+
 ## 1.10.1 - 2024-10-08
 
 ### Changed
