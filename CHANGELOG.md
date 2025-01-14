@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.3 - 2025-01-14
+
+- Update cotor tools. #77001, #77577
+- Update dependency symfony/console to v7.2.1. #77575
+- Update composer dependencies to v7.2.0. #76996
+
 ## 1.10.2 - 2024-11-05
 
 - Update composer dependencies to v7.1.6. #76150

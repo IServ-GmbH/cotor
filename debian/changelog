@@ -1,3 +1,12 @@
+cotor (1.10.3) testing; urgency=medium
+
+  * New release 1.10.3.
+  * Update cotor tools. #77001, #77577
+  * Update dependency symfony/console to v7.2.1. #77575
+  * Update composer dependencies to v7.2.0. #76996
+
+ -- IServ <info@iserv.eu>  Tue, 14 Jan 2025 12:41:26 +0100
+
 cotor (1.10.2) testing; urgency=medium
 
   * New release 1.10.2.
