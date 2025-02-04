@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.4 - 2025-02-04
+
+- Update cotor tools. #78489
+
 ## 1.10.3 - 2025-01-14
 
 - Update cotor tools. #77001, #77577
