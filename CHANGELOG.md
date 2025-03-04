@@ -4,17 +4,30 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.5 - 2025-03-04
+
+### Changed
+
+- Update cotor tools. #79234
+- Update dependency symfony/process to v7.2.4. #79231
+
 ## 1.10.4 - 2025-02-04
+
+### Changed
 
 - Update cotor tools. #78489
 
 ## 1.10.3 - 2025-01-14
+
+### Changed
 
 - Update cotor tools. #77001, #77577
 - Update dependency symfony/console to v7.2.1. #77575
 - Update composer dependencies to v7.2.0. #76996
 
 ## 1.10.2 - 2024-11-05
+
+### Changed
 
 - Update composer dependencies to v7.1.6. #76150
 - Update dependency phpstan/phpstan to v1.12.7. #76165
