@@ -1,3 +1,11 @@
+cotor (1.10.6) testing; urgency=medium
+
+  * New release 1.10.6.
+  * Update cotor tools. #80114
+  * Update composer dependencies. #80112
+
+ -- IServ <info@iserv.eu>  Tue, 08 Apr 2025 09:59:06 +0200
+
 cotor (1.10.5) testing; urgency=medium
 
   * New release 1.10.5.

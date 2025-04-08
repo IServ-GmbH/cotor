@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.6 - 2025-04-08
+
+- Update cotor tools. #80114
+- Update composer dependencies. #80112
+
 ## 1.10.5 - 2025-03-04
 
 ### Changed
