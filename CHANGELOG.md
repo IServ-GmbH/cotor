@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.7 - 2025-05-06
+
+- Update dependency phpstan/phpstan to v1.12.25. #80811
+- Update dependency symfony/console to v7.2.6. #80813
+
 ## 1.10.6 - 2025-04-08
 
 - Update cotor tools. #80114
