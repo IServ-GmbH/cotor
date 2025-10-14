@@ -1,3 +1,10 @@
+cotor (25.10.14-1) testing; urgency=medium
+
+  * Update cotor tools (fixes #84798)
+  * Update composer dependencies to v7.3.4 (fixes #84797)
+
+ -- IServ <info@iserv.eu>  Tue, 14 Oct 2025 12:37:27 +0200
+
 cotor (1.10.8) testing; urgency=medium
 
   * New release 1.10.8.
