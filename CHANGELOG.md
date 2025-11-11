@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.9 - 2025-11-11
+- Update dependencies.
+
 ## 1.10.8 - 2025-09-09
 - Update dependencies.
 
