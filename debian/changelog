@@ -1,3 +1,10 @@
+cotor (1:1.10.9) testing; urgency=medium
+
+  * New release 1:1.10.9.
+  * Update dependencies.
+
+ -- IServ <info@iserv.eu>  Tue, 18 Nov 2025 11:53:34 +0100
+
 cotor (25.10.14-1) testing; urgency=medium
 
   * Update cotor tools (fixes #84798)
