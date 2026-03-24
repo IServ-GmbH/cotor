@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.10.14 - 2026-03-24
+
+- Update dependencies. #89634, #89635
+
 ## 1.10.13 - 2026-02-24
 
 - Update dependencies.
