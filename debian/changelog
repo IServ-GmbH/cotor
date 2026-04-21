@@ -1,3 +1,10 @@
+cotor (1:1.10.15) testing; urgency=medium
+
+  * New release 1:1.10.15.
+  * Update dependencies. (fixes #90701, #90702)
+
+ -- IServ <info@iserv.eu>  Tue, 21 Apr 2026 16:31:11 +0200
+
 cotor (1:1.10.14) testing; urgency=medium
 
   * New release 1:1.10.14.
