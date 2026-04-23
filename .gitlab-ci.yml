@@ -25,6 +25,7 @@ stages:
   - package
   - test
   - lint
+  - review
   - upload
   - release
   - distribute
