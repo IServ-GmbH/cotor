@@ -1,5 +1,6 @@
 {
-    "require": {
-        "vimeo/psalm": "^4.10"
-    }
+  "require": {
+    "vimeo/psalm": "^4.10",
+    "php": ">=8.2"
+  }
 }

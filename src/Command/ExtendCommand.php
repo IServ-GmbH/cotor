@@ -37,7 +37,7 @@ final class ExtendCommand extends AbstractComposerCommand
         $name = (string)$input->getArgument('name');
         $extension = (string)$input->getArgument('extension');
         try {
-            /** @var mixed $version Makes psalm happy */
+            /** @psalm-var mixed $version Makes psalm happy */
             $version = $input->getArgument('version');
             if (null !== $version) {
                 $version = (string)$version;
@@ -107,6 +107,8 @@ final class ExtendCommand extends AbstractComposerCommand
         if ($version) {
             $extensionParam = $extension . ':' . $version;
         }
+
+        $this->prepareToolComposerJson($targetDir);
 
         try {
             $this->runComposerWithArguments('require', $targetDir, $extensionParam);
