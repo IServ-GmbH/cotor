@@ -113,8 +113,8 @@ abstract class AbstractComposerCommand extends AbstractToolCommand
             try {
                 $composer = new Composer(json_encode($json, JSON_THROW_ON_ERROR));
                 $this->filesystem->dumpFile($composerPath, $composer->toPrettyJsonString());
-            } catch (\JsonException) {
-                // Should not happen
+            } catch (\JsonException $e) {
+                throw new \RuntimeException('Failed to update composer.json in tool directory', previous: $e);
             }
         }
     }
