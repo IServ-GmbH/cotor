@@ -3,16 +3,12 @@
 /coverage/
 /.php-cs-fixer.cache
 /.phpunit.cache/
-/composer.lock
 
 /.idea/workspace.xml
 /.idea/usage.statistics.xml
 /.idea/tasks.xml
 /.idea/shelf
-/Makefile.iservmake
-/locale
-/system-locale
-!/locale/templates/*_misc.pot
 
+/Makefile.iservmake
 /cotor
 /cotor.phar
