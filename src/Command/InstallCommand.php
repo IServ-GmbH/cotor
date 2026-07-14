@@ -207,6 +207,8 @@ GI;
         }
 
         $this->filesystem->mkdir($targetDir);
+        $this->prepareToolComposerJson($targetDir);
+
         if ($noLock) {
             $this->filesystem->dumpFile($targetDir . DIRECTORY_SEPARATOR . '.gitignore', self::GITIGNORE_NO_LOCK);
         } else {
@@ -261,6 +263,8 @@ GI;
 
             return Command::FAILURE;
         }
+
+        $this->prepareToolComposerJson($targetDir);
 
         try {
             $this->runComposerWithPackage('require', $targetDir, $extension, true);

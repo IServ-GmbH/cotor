@@ -13,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 #[AsCommand(name: 'update-all', description: 'Updates all tools')]
-final class UpdateAllCommand extends AbstractToolCommand
+final class UpdateAllCommand extends AbstractComposerCommand
 {
     protected function configure(): void
     {
@@ -41,6 +41,7 @@ final class UpdateAllCommand extends AbstractToolCommand
 
         foreach ($targetDirs as $targetDir) {
             try {
+                $this->prepareToolComposerJson($targetDir);
                 $this->runComposer('update', $targetDir);
                 $io->writeln(sprintf('<info>✓</info> %s updated successfully.', ToolPath::path2name($targetDir)));
             } catch (ProcessFailedException) {

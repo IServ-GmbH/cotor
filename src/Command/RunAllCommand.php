@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 #[AsCommand(name: 'run-all', description: 'Run composer command on all tools')]
-final class RunAllCommand extends AbstractToolCommand
+final class RunAllCommand extends AbstractComposerCommand
 {
     protected function configure(): void
     {

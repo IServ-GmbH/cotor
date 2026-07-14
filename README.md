@@ -2,7 +2,7 @@
 
 ## How to use cotor
 
-You can install any composer based dev tool with cotor. It will install each package in a `tools` folder in your current working directory.
+You can install any composer-based dev tool with cotor. It will install each package in a `tools` folder in your current working directory.
 For each tool a standalone folder named by the package without the vendor will be created.
 
 ### Commands
@@ -12,7 +12,7 @@ For each tool a standalone folder named by the package without the vendor will b
 * **install $name**: Installs a new tool. `$name` must be a tool's package or registered shortcut name.
 * **update $name**: Updates an installed tool. `$name` must be a tool's package or registered shortcut name.
 * **update-all**: Updates all installed tools.
-* **outdated**: Lists all tools and checks if they are up-to-date.
+* **outdated**: Lists all tools and checks if they are up to date.
 * **extend $name $extension**: Installs a tool extension. `$name` must be a tool's package or registered shortcut name. `$extension` must be the package name of the extension.
 
 ### composer.json
@@ -32,6 +32,33 @@ Cotor tracks your required tools in the extra section in your `composer.json` fi
 ~~~
 
 This way you can keep track of the tools and cotor can install them easily.
+
+## Configuration
+
+cotor can be configured using a `cotor.json` file in the project root.
+
+Example:
+
+```json
+{
+  "php": "8.2.0",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.example.com"
+    }
+  ],
+  "sync": true
+}
+```
+
+### Options
+
+- `php`: (string, default: `null`) The PHP platform version to use for tool installations.
+- `repositories`: (array, default: `[]`) Composer repositories to use for tool installations.
+- `sync`: (boolean, default: `true`) Whether to automatically inherit `require.php` and `repositories` from the root `composer.json`.
+
+Values in `cotor.json` will overwrite values inherited from `composer.json`.
 
 ## How to build cotor
 
