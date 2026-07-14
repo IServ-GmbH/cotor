@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Added
+
+- Added support for `cotor.json` configuration file to control PHP version and Composer repositories for tool installations. #94491
+- Added automatic synchronization of PHP version and repositories from the root `composer.json` (enabled by default). #94491
+
 ## 1.10.17 - 2026-06-23
 
 - Update dependencies. #93219, #93220

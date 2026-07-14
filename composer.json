@@ -3,9 +3,10 @@
   "description": "Allows to install tools as standalone Composer dependencies.",
   "license": "MIT",
   "type": "library",
+  "homepage": "https://github.com/IServ-GmbH/cotor/",
   "require": {
     "php": ">=8.2",
-    "symfony/console": "^7.0.0",
+    "symfony/console": "^7.0",
     "symfony/filesystem": "^7.0",
     "symfony/process": "^7.0"
   },
@@ -15,6 +16,11 @@
   "autoload": {
     "psr-4": {
       "IServ\\ComposerToolsInstaller\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "IServ\\ComposerToolsInstaller\\Tests\\": "tests"
     }
   },
   "bin": [
@@ -27,6 +33,7 @@
     "cotor": {
       "friendsofphp/php-cs-fixer": "^3.1",
       "phpstan/phpstan": "^1.5",
+      "phpunit/phpunit": "^11.5",
       "rector/rector": "^1.2",
       "vimeo/psalm": "^4.10"
     }

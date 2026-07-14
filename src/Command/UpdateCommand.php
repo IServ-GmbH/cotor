@@ -15,7 +15,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(name: 'update', description: 'Updates a tool')]
-final class UpdateCommand extends AbstractToolCommand
+final class UpdateCommand extends AbstractComposerCommand
 {
     protected function configure(): void
     {
@@ -58,6 +58,8 @@ final class UpdateCommand extends AbstractToolCommand
                 return Command::INVALID;
             }
         }
+
+        $this->prepareToolComposerJson($targetDir);
 
         try {
             $this->runComposer('update', $targetDir);

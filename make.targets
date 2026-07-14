@@ -1,7 +1,10 @@
 php
+phpunit
 psalm
 phpstan
 phpcsfixer
 debug
 help
-
+-extract_translations
+-deploy_translations
+-locale

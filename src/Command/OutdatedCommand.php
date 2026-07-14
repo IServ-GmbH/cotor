@@ -13,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 #[AsCommand(name: 'outdated', description: 'Check if tools are outdated or not')]
-final class OutdatedCommand extends AbstractToolCommand
+final class OutdatedCommand extends AbstractComposerCommand
 {
     protected function configure(): void
     {
@@ -42,7 +42,7 @@ final class OutdatedCommand extends AbstractToolCommand
         foreach ($targetDirs as $targetDir) {
             try {
                 if ('' === $out = $this->runComposerWithArguments('outdated', $targetDir, '--direct')) {
-                    $io->writeln(sprintf('<info>✓</info> %s is up-to-date.', ToolPath::path2name($targetDir)));
+                    $io->writeln(sprintf('<info>✓</info> %s is up to date.', ToolPath::path2name($targetDir)));
                 } elseif (preg_match('#^1(?:.+?)/(?:.+?)\s(?P<current>.+?)\s.\s(?P<new>.+?)\s#', $out, $matches)) {
                     $io->writeln(sprintf('<comment>⚠</comment> %s is outdated: %s => %s', ToolPath::path2name($targetDir), $matches['current'], $matches['new']));
                 } else {
