@@ -1,3 +1,13 @@
+cotor (1:1.11.0) testing; urgency=medium
+
+  * New release 1:1.11.0.
+  * Added support for `cotor.json` configuration file to control PHP
+    version and Composer repositories for tool installations. #94491
+  * Added automatic synchronization of PHP version and repositories from
+    the root `composer.json` (enabled by default). #94491
+
+ -- IServ <info@iserv.eu>  Tue, 21 Jul 2026 14:41:29 +0200
+
 cotor (1:1.10.17) testing; urgency=medium
 
   * New release 1:1.10.17.

@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.11.0 - 2026-07-21
+
 ### Added
 
 - Added support for `cotor.json` configuration file to control PHP version and Composer repositories for tool installations. #94491
