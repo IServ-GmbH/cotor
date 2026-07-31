@@ -104,7 +104,7 @@ final class ExtendCommand extends AbstractComposerCommand
 
         // Install extension to tool
         $extensionParam = $extension;
-        if ($version) {
+        if ($version !== null && $version !== '') {
             $extensionParam = $extension . ':' . $version;
         }
 
