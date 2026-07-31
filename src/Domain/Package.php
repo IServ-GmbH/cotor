@@ -21,9 +21,12 @@ final class Package
             throw new \InvalidArgumentException(sprintf('%s is not valid composer package name!', $vendorName));
         }
 
-        [$vendor, $name] = explode('/', $vendorName, 2);
+        $separatedVendorName = explode('/', $vendorName, 2);
+        if (count($separatedVendorName) !== 2) {
+            throw new \InvalidArgumentException(sprintf('%s is not valid composer package name!', $vendorName));
+        }
 
-        return new self($vendor, $name, $version ?? self::DEFAULT_VERSION);
+        return new self($separatedVendorName[0], $separatedVendorName[1], $version ?? self::DEFAULT_VERSION);
     }
 
     public function withVersion(string $version): self
