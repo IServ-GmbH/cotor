@@ -27,7 +27,13 @@ abstract class AbstractToolCommand extends Command
             $name = ToolsRegistry::getRegisteredTools()[$name];
         }
 
-        return new Package(...explode('/', $name, 2));
+        $separatedName = explode('/', $name, 2);
+
+        if (count($separatedName) !== 2) {
+            throw new \InvalidArgumentException();
+        }
+
+        return new Package($separatedName[0], $separatedName[1]);
     }
 
     /**
