@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+## 1.14.0 - 2026-09-22
+
+ - Update dependencies. (fixes #100605, #100827)
+
 ## 1.13.0 - 2026-09-15
 
 - Update dependencies. #99681, #99957, #100082, #100368
