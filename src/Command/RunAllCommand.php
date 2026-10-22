@@ -59,7 +59,7 @@ final class RunAllCommand extends AbstractComposerCommand
 
             try {
                 if ('' !== $options) {
-                    $this->runComposerWithArguments($cmd, $targetDir, $options);
+                    $this->runComposer($cmd, $targetDir, [$options]);
                 } else {
                     $this->runComposer($cmd, $targetDir);
                 }

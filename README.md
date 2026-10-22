@@ -9,11 +9,11 @@ For each tool a standalone folder named by the package without the vendor will b
 
 * **list**: Lists all available commands.
 * **install**: Installs all tools and extensions listed in your composer.json at `extra.cotor`.
-* **install $name**: Installs a new tool. `$name` must be a tool's package or registered shortcut name.
-* **update $name**: Updates an installed tool. `$name` must be a tool's package or registered shortcut name.
+* **install \$name**: Installs a new tool. `$name` must be a tool's package or registered shortcut name.
+* **update \$name**: Updates an installed tool. `$name` must be a tool's package or registered shortcut name.
 * **update-all**: Updates all installed tools.
 * **outdated**: Lists all tools and checks if they are up to date.
-* **extend $name $extension**: Installs a tool extension. `$name` must be a tool's package or registered shortcut name. `$extension` must be the package name of the extension.
+* **extend \$name \$extension**: Installs a tool extension. `$name` must be a tool's package or registered shortcut name. `$extension` must be the package name of the extension.
 
 ### composer.json
 

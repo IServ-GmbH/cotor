@@ -41,7 +41,7 @@ final class OutdatedCommand extends AbstractComposerCommand
 
         foreach ($targetDirs as $targetDir) {
             try {
-                if ('' === $out = $this->runComposerWithArguments('outdated', $targetDir, '--direct')) {
+                if ('' === $out = $this->runComposer('outdated', $targetDir, ['--direct'])) {
                     $io->writeln(sprintf('<info>✓</info> %s is up to date.', ToolPath::path2name($targetDir)));
                 } elseif (preg_match('#^1(?:.+?)/(?:.+?)\s(?P<current>.+?)\s.\s(?P<new>.+?)\s#', $out, $matches)) {
                     $io->writeln(sprintf('<comment>⚠</comment> %s is outdated: %s => %s', ToolPath::path2name($targetDir), $matches['current'], $matches['new']));

@@ -216,7 +216,7 @@ GI;
         }
 
         try {
-            $this->runComposerWithPackage('require', $targetDir, $package, $useVersion);
+            $this->runComposerWithPackage('require', $targetDir, $package, $useVersion, ['--dev']);
         } catch (ProcessFailedException $processFailedException) {
             $io->error('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
 
@@ -267,7 +267,7 @@ GI;
         $this->prepareToolComposerJson($targetDir);
 
         try {
-            $this->runComposerWithPackage('require', $targetDir, $extension, true);
+            $this->runComposerWithPackage('require', $targetDir, $extension, true, ['--dev']);
         } catch (ProcessFailedException $processFailedException) {
             $io->warning('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
         }

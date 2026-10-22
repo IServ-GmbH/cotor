@@ -111,7 +111,7 @@ final class ExtendCommand extends AbstractComposerCommand
         $this->prepareToolComposerJson($targetDir);
 
         try {
-            $this->runComposerWithArguments('require', $targetDir, $extensionParam);
+            $this->runComposer('require', $targetDir, [$extensionParam, '--dev']);
         } catch (ProcessFailedException $processFailedException) {
             $io->error('Failed to run composer: ' . $processFailedException->getProcess()->getErrorOutput());
 

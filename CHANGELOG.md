@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [Unreleased]
 
+### Changed
+
+- Changed installation mechanism to install tools and extensions into `require-dev` instead of `require`. #103030
+
 ## 1.15.0 - 2026-10-13
 
 - Update dependencies (fixes #102270, #102383)

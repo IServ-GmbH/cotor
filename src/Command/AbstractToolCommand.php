@@ -37,36 +37,24 @@ abstract class AbstractToolCommand extends Command
     }
 
     /**
+     * @param string[] $arguments
      * @throws ProcessFailedException
      */
-    protected function runComposerWithPackage(string $command, string $targetDir, Package $package, bool $useVersion): string
+    protected function runComposerWithPackage(string $command, string $targetDir, Package $package, bool $useVersion, array $arguments): string
     {
         $name = $package->getComposerName();
         if ($useVersion) {
             $name .= ':' . $package->getVersion();
         }
 
-        $process = new Process(['composer', $command, sprintf('--working-dir=%s', $targetDir), $name]);
-        $process->mustRun();
-
-        return $process->getOutput();
+        return $this->runComposer($command, $targetDir, [$name, ...$arguments]);
     }
 
     /**
+     * @param string[] $arguments
      * @throws ProcessFailedException
      */
-    protected function runComposer(string $command, string $targetDir): string
-    {
-        $process = new Process(['composer', $command, sprintf('--working-dir=%s', $targetDir)]);
-        $process->mustRun();
-
-        return $process->getOutput();
-    }
-
-    /**
-     * @throws ProcessFailedException
-     */
-    protected function runComposerWithArguments(string $command, string $targetDir, string ...$arguments): string
+    protected function runComposer(string $command, string $targetDir, array $arguments = []): string
     {
         $process = new Process(array_merge(['composer', $command, sprintf('--working-dir=%s', $targetDir)], $arguments));
         $process->mustRun();
