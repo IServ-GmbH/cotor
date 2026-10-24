@@ -1,6 +1,6 @@
 {
   "require": {
     "php": ">=8.2",
-    "vimeo/psalm": "^5.0"
+    "vimeo/psalm": "^6.0"
   }
 }
