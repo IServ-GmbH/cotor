@@ -129,13 +129,15 @@ GI;
             }
 
             // Install extensions
-            /** @var array{extra: array{cotor: array{extensions?: array<string, array<string, string>>}}} $composerJson */
+            /**
+             * @var array{extra: array{cotor: array{extensions?: array<string, array<string, string>>}}} $composerJson
+             * @psalm-suppress RiskyTruthyFalsyComparison
+             */
             if (!empty($composerJson['extra'][Cotor::COMPOSER_EXTRA][Cotor::COMPOSER_EXTRA_EXTENSIONS])) {
                 /**
                  * Psalm why ya so nit-picky??!
                  *
                  * @psalm-suppress MixedArrayAccess
-                 * @var string $toolName
                  * @var array<string, string> $packages
                  */
                 foreach ($composerJson['extra'][Cotor::COMPOSER_EXTRA][Cotor::COMPOSER_EXTRA_EXTENSIONS] as $toolName => $packages) {

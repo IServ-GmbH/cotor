@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="7.16.0@708bf98874d359acbdcedb84f8624e9ec215867d">
+  <file src="src/Command/AbstractComposerCommand.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[$toolComposerLock]]></code>
+      <code><![CDATA[file_get_contents($composerPath)]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Command/AbstractToolCommand.php">
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Command/ExtendCommand.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[file_get_contents($composerPath)]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Command/InstallCommand.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[file_get_contents($composerPath)]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Command/OutdatedCommand.php">
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Command/RunAllCommand.php">
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Command/UpdateAllCommand.php">
+    <PossiblyFalseOperand>
+      <code><![CDATA[getcwd()]]></code>
+    </PossiblyFalseOperand>
+  </file>
+  <file src="src/Tools/ToolPath.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[$targetDirs]]></code>
+      <code><![CDATA[strrchr($tooldir, '/')]]></code>
+    </PossiblyFalseArgument>
+  </file>
+</files>
