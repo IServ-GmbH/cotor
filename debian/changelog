@@ -1,3 +1,10 @@
+cotor (1:1.16.0) unstable; urgency=medium
+
+  * New release 1:1.16.0.
+  * Update dependencies (fixes #105376)
+
+ -- IServ <info@iserv.eu>  Tue, 24 Nov 2026 13:59:14 +0100
+
 cotor (1:1.15.0) unstable; urgency=medium
 
   * New release 1:1.15.0.
